@@ -13,6 +13,48 @@ function randomInt(min, max) { // [min, max] not [min, max)
       return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function addHistory(user, lean)
+{
+	var historyObj = {"lean": lean, "timestamp": Math.round(Date.now() / 60000)};
+	user.history.push(historyObj);
+	user.history.insert(historyObj)
+}
+
+function getUser(uuid, lean, callback)
+{
+	var user = null;
+	mongodb.MongoClient.connect('mongodb://localhost:27016/news', function(err, db)
+	{
+		console.log("Connected to MongoDB");
+
+        db.users.find({'userid' : uuid}, function(result) {
+			if(result.length == 0)
+			{
+				db.users.insert({"userid" : uuid, "history" : []}, function(result) {
+					console.log("SUCCESFULLY CREATE NEW USER");
+					user = result[0];
+					addHistory(user, lean);
+					db.close();
+					callback(user);
+				});
+			}
+			else
+			{
+				user = result[0];
+				addHistory(user, lean);
+				db.close();
+				callback(user);
+			}
+
+        });
+	});
+}
+
+function findNetwork(lean, callback)
+{
+	
+}
+
 http.createServer(function (req, res) {
     var body = [];
 
@@ -35,85 +77,32 @@ http.createServer(function (req, res) {
         var link = url.parse(data[1]);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
 
-        mongodb.MongoClient.connect('mongodb://localhost:27016/news', function(err, db)
-        {
-            console.log("Connected to MongoDB");
-
-            var user = null;
-
-            mongodb.find(db, "users", {'userid' : uuid}, function(result) {
-                    user = result[0];
-            });
-
-            if(user == null)
-            {
-                user = {userid : uuid, history : []};
-                mongodb.insert(db, "users", user, function(result) {
-                    console.log("SUCCESFULLY CREATE NEW USER");
-                });
-            }
-            var historyObj = {"lean": lean, "timestamp": Math.round(Date.now() / 60000)};
-            user.history.push(historyObj);
-
-            mongodb.collection()
-
-
-            db.close();
-        }
-
-        console.log ("User is reading from '" + network.name + "' with political lean " + network.lean + ".");
-
-        var minlean, maxLean = 0;
-        if (network.lean < 0) { // Shift left to right.
-            minLean = network.lean + 0.2;
-            maxLean = network.lean + 0.5;
-            if (minLean > 0) {
-                minLean = network.lean + 0.001;
-                maxLean = 0;
-            } else if (maxLean > 0) {
-                maxLean = 0;
-            }
-        } else if (network.lean > 0) { // Shift right to left.
-            minLean = network.lean - 0.2;
-            maxLean = network.lean - 0.5;
-            if (minLean < 0) {
-                minLean = network.lean - 0.001;
-                maxLean = 0;
-            } else if (maxLean < 0) {
-                maxLean = 0;
-            }
-        } else {
-            console.log("Network '" + network.name + "' has no lean, returning null.");
-            res.writeHead(200, {"Content-Type": "text/plain"});
-            res.end(""); // null
-            return;
-        }
-
-        var responseMsg = "";
-
-        var results = newsNetwork.getNewsNetworksByLean(minLean, maxLean);
-        if (results.length == 0) {
-            console.log("Network '" + network.name + "' has no near-leaning results [" + minLean + ", " + maxLean + "], returning null.");
-            res.writeHead(200, {"Content-Type": "text/plain"});
-            res.end(""); // null
-            return;
-        }
-        var selectedNetwork = results[randomInt(0, results.length - 1)];
-        if (selectedNetwork.cache.length > 0) {
-            var selectedArticle = selectedNetwork.cache[randomInt(0, results.length - 1)];
-            console.log("Selected " + selectedArticle.title + " from network '" + selectedNetwork.name + "' with lean " + selectedNetwork.lean + ".");
-
-            var responseMsg = selectedArticle.url + "\n" + selectedArticle.title + "\n" + selectedArticle.image + "\n";
-            if (selectedArticle.network != undefined) {
-                responseMsg += selectedArticle.network + "\n";
-            }
-        } else {
-            console.log("Selected network '" + selectedNetwork.name + "' with lean " + selectedNetwork.lean + ".");
-            responseMsg = selectedNetwork.domain;
-        }
-
-        res.writeHead(200, {"Content-Type": "text/plain"});
-        res.end(responseMsg);
+		var user = getUser(uuid, network.lean, function(user) {
+			var time = Math.round(Date.now() / 60000);
+			var sum = 0;
+			var weights = 0;
+			var weight = 0;
+			for(var obj in user.history)
+			{
+				weight = Math.pow(Math.E, (obj.timestamp - time) / 1);
+				sum += obj.lean * weight;
+				weights += weight;
+			}
+			sum /= weights;
+			
+			findArticle(network, sum, function(article) {
+				var responseMsg = "";
+				res.writeHead(200, {"Content_Type" : "text/plain"});
+				if(article != null)
+				{
+					responseMsg = article.url + "\n";
+					responseMsg += article.caption + "\n";
+					responseMsg += article.imageUrl;
+				}
+				res.end(responseMsg);
+			});
+			
+		});
     }).on("error", function(err) {
         console.error(err.stack);
     });
