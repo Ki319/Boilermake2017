@@ -84,7 +84,7 @@ http.createServer(function (req, res) {
         var title = data[2];
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
 
-		scraper.scrape(network, title, function() {
+		scraper.scrape(network, title, function(scrapeData) {
 			getUser(uuid, network.lean, function(user) {
 				var time = Math.round(Date.now() / 60000);
 				var sum = 0;
@@ -104,17 +104,26 @@ http.createServer(function (req, res) {
 				}
 				sum /= weights;
 
-				findArticle(network, sum, function(article) {
-					var responseMsg = "";
-					res.writeHead(200, {"Content_Type" : "text/plain"});
-					if(article != null)
-					{
-						responseMsg = article.url + "\n";
-						responseMsg += article.caption + "\n";
-						responseMsg += article.imageUrl;
-					}
-					res.end(responseMsg);
-				});
+                if (!scrapeData) {
+    				findArticle(network, sum, function(article) {
+    					var responseMsg = "";
+    					res.writeHead(200, {"Content_Type" : "text/plain"});
+    					if(article != null)
+    					{
+    						responseMsg = article.url + "\n";
+    						responseMsg += article.caption + "\n";
+    						responseMsg += article.imageUrl;
+    					}
+    					res.end(responseMsg);
+    				});
+                } else {
+                    var responseMsg = "";
+                    res.writeHead(200, {"Content_Type" : "text/plain"});
+                    responseMsg = scrapeData.url + "\n";
+                    responseMsg += scrapeData.title + "\n";
+                    responseMsg += scrapeData.img;
+                    res.end(responseMsg);
+                }
 
 				for(var i = 0; i < cleanList.length; i++)
 				{

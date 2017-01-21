@@ -2,7 +2,7 @@ var parser = require("rss-parser");
 var mongodb = require("./mongodb.js");
 
 var rssList = [
-    {name: "vox", domain: "www.vox.com", rss: 'http://www.vox.com/rss/index.xml', lean: -0.67, cache: [], searchable: true},
+    {name: "vox", domain: "www.vox.com", rss: 'http://www.vox.com/rss/index.xml', lean: -0.67, cache: [], searchable: false},
     {name: "cnn", domain: "www.cnn.com", rss: 'http://rss.cnn.com/rss/cnn_topstories.rss', lean: -0.067, cache: [], searchable: false},
     {name: "motherjones", domain: "www.motherjones.com", rss: 'http://feeds.feedburner.com/motherjones/main', lean: -0.93, cache: [], searchable: false},
     {name: "huffingtonpost", domain: "www.huffingtonpost.com", rss: 'http://www.huffingtonpost.com/feeds/index.xml', lean: -0.8, cache: [], searchable: true},
@@ -32,7 +32,7 @@ var rssList = [
 ];
 
 /*
-vox [searchable]
+vox
 cnn
 motherjones
 huffingtonpost [searchable](?)
