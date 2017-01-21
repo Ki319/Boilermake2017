@@ -5,9 +5,9 @@ var mongodb = require("./mongodb.js");
 var newsNetwork = require("./newsNetwork.js");
 var url = require("url");
 
-newsNetwork.getCache("motherjones", function(cache) {
+newsNetwork.getCache("vox", function(cache) {
     console.log("ITS DONE!");
-    // console.log(cache);
+    console.log(cache);
 });
 
 function randomInt(min, max) { // [min, max] not [min, max)
@@ -55,7 +55,7 @@ function getUser(uuid, lean, callback)
 
 function findNetwork(lean, callback)
 {
-	
+
 }
 
 http.createServer(function (req, res) {
@@ -92,7 +92,7 @@ http.createServer(function (req, res) {
 				weights += weight;
 			}
 			sum /= weights;
-			
+
 			findArticle(network, sum, function(article) {
 				var responseMsg = "";
 				res.writeHead(200, {"Content_Type" : "text/plain"});
@@ -104,7 +104,7 @@ http.createServer(function (req, res) {
 				}
 				res.end(responseMsg);
 			});
-			
+
 		});
     }).on("error", function(err) {
         console.error(err.stack);

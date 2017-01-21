@@ -96,18 +96,16 @@ var rssReader = [];
 
 rssReader["vox"] = createGeneralReader(function(entry) {
     var re = [];
-    re[0] = new RegExp("^<img.*src=\".*\" \/>");
+    re[0] = new RegExp("<img.*src=\".*\" \/>");
     re[1] = new RegExp("src=\".*\"");
     re[2] = new RegExp("\".*\"");
 
-    var image = entry.content;
+    var image = entry.content.substring(0, 500);
 
     for (var i = 0; i < re.length; i++) {
         image = re[i].exec(image);
-        if(image != null) {
-            image = image[0];
-        }
-        else {
+		image = image[0];
+        if (image == null) {
             return "";
         }
     }
@@ -201,6 +199,7 @@ function createGeneralReader(entryFunction) {
             obj.title = entry.title;
             obj.url = entry.link;
             obj.image = entryFunction(entry);
+            console.log(entry);
             cache.push(obj);
         }, cache, entryFunction);
     };
