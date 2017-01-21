@@ -262,7 +262,7 @@ function getCache(newsNetworkName, callback) {
           if (1 <= result.length) {
               console.log("network found");
               console.log(result);
-              var network = result[0];
+              var network = result[0].data;
 
               // if lastUpdate was less than 1 hour ago
               var hour = 60*60*1000;
@@ -298,7 +298,8 @@ function getCacheFromRssAndCreate(db, newsNetworkName, callback) {
         var newsNetwork = getNewsNetwork(newsNetworkName);
         newsNetwork.lastUpdate = Date.now();
         newsNetwork.cache = cache;
-        var set = {"$set": newsNetwork};
+        console.log(newsNetwork);
+        var set = {"name": newsNetworkName, "data": newsNetwork};
         mongodb.insertDocument(db, set, function(result) {
             console.log("Added to Database");
             db.close();
@@ -313,7 +314,11 @@ function getCacheFromRssAndUpdate(db, newsNetworkName, callback) {
         var newsNetwork = getNewsNetwork(newsNetworkName);
         newsNetwork.lastUpdate = Date.now();
         newsNetwork.cache = cache;
-        var set = {"$set": newsNetwork};
+        var set = {"$set":
+        {
+            "data.lastUpdate": newsNetwork.lastUpdate,
+            "data.cache": newsNetwork.cache,
+        }};
         mongodb.updateDocument(db, {'name': newsNetworkName}, set, function(result) {
             db.close();
         });
