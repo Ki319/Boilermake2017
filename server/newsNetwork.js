@@ -96,7 +96,7 @@ var rssReader = [];
 
 function rssContentParser(entry) {
     var re = [];
-    re[0] = new RegExp("<img.*src=\".*\" \/>");
+    re[0] = new RegExp("<[iI]mg.*src=\".*\" \/>");
     re[1] = new RegExp("src=\".*\"");
     re[2] = new RegExp("\".*\"");
 
@@ -181,16 +181,28 @@ rssReader["forbes"] = createGeneralReader(function(entry) {
     console.log(null.all);
     return entry.image;
 });
+
+// TODO
 rssReader["realclearpolitics"] = createGeneralReader(function(entry) {
     return entry.image;
 });
+
+// TODO
 rssReader["usatoday"] = createGeneralReader(function(entry) {
     return entry.image;
 });
+
+// TODO entry
 rssReader["abcnews"] = createGeneralReader(function(entry) {
+    console.log(entry);
+    console.log(entry.thumbnail);
+    console.log(null.thumbnail);
     return entry.image;
 });
+
+// TODO image
 rssReader["cbsnews"] = createGeneralReader(function(entry) {
+    console.log(entry);
     return entry.image;
 });
 rssReader["washingtonpost"] = createGeneralReader(function(entry) {
