@@ -12,8 +12,8 @@ module.networkSource = { // + delimited
 
 module.scrapeNetwork = {
     "vox": function($) {
-        var top = $('.gsc-webResult .gsc-result').first().children().first();
-
+        // Invalid, uses AJAX.
+        console.log($('a.gs-title').first());
         var link = $('a.gs-title').first().attr("href");
         var title = $('a.gs-title').first().text();
         var img = $('img.gs-image').first().attr("src");
@@ -24,7 +24,15 @@ module.scrapeNetwork = {
 
     },
     "huffingtonpost": function($) {
-        // ...
+        var link = $('.card__link').first().attr('href');
+        var title = $('.card__link').first().text();
+        var img = $('div.card__image__src').first().attr('style');
+
+        img = img.replace("background-image: url(", "");
+        img = img.replace(");", "");
+
+        console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        return {"url": link, "title": title, "img": img};
     }
 };
 
@@ -48,6 +56,7 @@ module.exports.scrape = function(network, article, callback) {
         }
 
         var $ = cheerio.load(html);
+        console.log("Scraping network '" + network.name + "'");
         callback(module.scrapeNetwork[network.name]($));
     });
 }
