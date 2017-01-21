@@ -6,7 +6,7 @@ var insert = function(db, incollection, obj, callback) {
   // Get the documents collection
   var collection = db.collection(incollection);
   // Insert some documents
-  collection.insertOne(documents, function(err, result) {
+  collection.insertOne(obj, function(err, result) {
 
     callback(result);
   });

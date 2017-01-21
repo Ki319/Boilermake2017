@@ -249,34 +249,6 @@ function scrapeAllRss(callback) {
     });
 }
 
-function startFeedReader() {
-
-    scrapeAllRss(function(network, articles) {
-        // connect to mongodb
-        MongoClient.connect(url, function(err, db) {
-            // check if we up to date cache
-          assert.equal(null, err);
-          console.log("Connected successfully to server");
-
-          //
-          var newsNetwork = getNewsNetwork(network);
-          rssReader[network](articles, newsNetwork.cache);
-
-          db.close();
-        });
-    });
-    /*
-    var refreshIntervalId = setInterval(function() {
-        console.log('intervalSet');
-        scrapeAllRss(function(network, articles) {
-            var newsNetwork = getNewsNetwork(network);
-            rssReader[network](articles, newsNetwork.cache);
-        });
-        clearInterval(refreshIntervalId);
-    }, 1000);
-    */
-}
-
 var url = 'mongodb://localhost:27017/news';
 
 function getCache(newsNetworkName, callback) {
