@@ -1,11 +1,21 @@
 var http = require("http");
 var request = require("request");
 var querystring = require("querystring");
+var cheerio = require("cheerio");
 
 var sources = [];
 
 sources["cnn"] = function (article) {
-
+    var query = querystring.stringify({query: article});
+    request("http://www.cnn.com/search/?text=" + query, function(error, response, html) {
+        if (error) {
+            console.error(error);
+            return null;
+        } else {
+            var $ = cheerio.load(html);
+            var href = $(".cd__headline-text").first().parent();
+        }
+    });
 }
 
 function scrapeSource(source, article) {
@@ -28,7 +38,7 @@ http.createServer(function (req, res) {
 
 
         res.writeHead(200, {"Content-Type": "text/plain"});
-        res.end("# POST DATA:\n" + body + "\n");
+        res.end("http://hmpg.net/downloadwww.gif\nhttp://hmpg.net/\nThis is the Trump era.\n");
 
         body = [];
     }).on("error", function(err) {
