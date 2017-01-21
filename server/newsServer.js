@@ -4,10 +4,10 @@ var newsNetwork = require("./newsNetwork.js");
 var url = require("url");
 var scraper = require("./scraper.js");
 
-newsNetwork.getCache("forbes", function(cache) {
+/*newsNetwork.getCache("vox", function(cache) {
     console.log("ITS DONE!");
     console.log(cache[0]);
-});
+});*/
 
 function randomInt(min, max) { // [min, max] not [min, max)
       min = Math.ceil(min);
@@ -25,15 +25,20 @@ function addHistory(user, lean)
 function getUser(uuid, lean, callback)
 {
 	var user = null;
-	mongodb.MongoClient.connect('mongodb://localhost:27016/news', function(err, db)
+	mongodb.MongoClient.connect('mongodb://localhost:27017/news', function(err, db)
 	{
+        console.log();
+        console.log(db);
         console.log(err);
+
+
 		console.log("Connected to MongoDB");
 
-        db.users.find({'userid' : uuid}, function(result) {
+        mongodb.find(db, "users", {'userid' : uuid}, function(result) {
 			if(result.length == 0)
 			{
-				db.users.insert({"userid" : uuid, "history" : []}, function(result) {
+                mongodb.insert(db, "users", {'userid' : uuid, history: []}, function(result) {
+				//db.users.insert({"userid" : uuid, "history" : []}, function(result) {
 					console.log("SUCCESFULLY CREATE NEW USER");
 					user = result[0];
 					addHistory(user, lean);
