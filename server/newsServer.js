@@ -5,7 +5,10 @@ var mongodb = require("./mongodb.js");
 var newsNetwork = require("./newsNetwork.js");
 var url = require("url");
 
-console.log(newsNetwork.getCache("motherjones"));
+newsNetwork.getCache("motherjones", function(cache) {
+    console.log("ITS DONE!");
+    // console.log(cache);
+});
 
 function randomInt(min, max) { // [min, max] not [min, max)
       min = Math.ceil(min);
