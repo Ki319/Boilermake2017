@@ -4,7 +4,7 @@ var querystring = require("querystring");
 var mongodb = require("./mongodb.js");
 var newsNetwork = require("./newsNetwork.js");
 
-newsNetwork.startFeedReader();
+console.log(newsNetwork.getCache("motherjones"));
 
 http.createServer(function (req, res) {
     var body = [];

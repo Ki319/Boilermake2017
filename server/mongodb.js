@@ -2,20 +2,18 @@
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
 
-var insertDocuments = function(db, documents, callback) {
+var insertDocument = function(db, document, callback) {
   // Get the documents collection
   var collection = db.collection('documents');
   // Insert some documents
-  collection.insertMany(documents, function(err, result) {
-    assert.equal(err, null);
-    var len = result.result.n;
-    console.log("Inserted " + len + " documents into the collection");
+  collection.insertOne(document, function(err, result) {
+
     callback(result);
   });
 }
 
 // queryFilter: {'a': 3}
-var findDocuments = function(db, queryFilter, callback) {
+var findDocument = function(db, queryFilter, callback) {
   // Get the documents collection
   var collection = db.collection('documents');
   // Find some documents
@@ -27,15 +25,13 @@ var findDocuments = function(db, queryFilter, callback) {
   });
 }
 
-var updateDocument = function(db, callback) {
+// queryFilter = {'a': 3}
+// set = { $set: {'b': 1} }
+var updateDocument = function(db, queryFilter, set, callback) {
   // Get the documents collection
   var collection = db.collection('documents');
   // Update document where a is 2, set b equal to 1
-  collection.updateOne({ a : 2 }
-    , { $set: { b : 1 } }, function(err, result) {
-    assert.equal(err, null);
-    assert.equal(1, result.result.n);
-    console.log("Updated the document with the field a equal to 2");
+  collection.updateOne(queryFilter, set, function(err, result) {
     callback(result);
   });
 }
@@ -63,30 +59,8 @@ var indexCollection = function(db, callback) {
   );
 };
 
-name = "Mother Jones";
-regExp = "motherjones\.com\/.*\/20[0-1][0-9]\/";
-addNewsSite(name, regExp);
-name = "Huffington Post";
-regExp = "huffingtonpost\.com\/entry";
-addNewsSite(name, regExp);
-name = "Vox";
-regExp = "vox\.com\/.*/20[0-1][0-9]/";
-addNewsSite(name, regExp);
-
-
-// Connection URL
-var url = 'mongodb://localhost:27017/news';
-
-// Use connect method to connect to the server
-MongoClient.connect(url, function(err, db) {
-  assert.equal(null, err);
-  console.log("Connected successfully to server");
-
-  db.close();
-});
-
 module.exports.MongoClient = MongoClient;
-module.exports.insertDocuments = insertDocuments;
-module.exports.findDocuments = findDocuments;
+module.exports.insertDocument = insertDocument;
+module.exports.findDocument = findDocument;
 module.exports.updateDocument = updateDocument;
 module.exports.removeDocument = removeDocument;
