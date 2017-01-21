@@ -6,7 +6,8 @@ var newsNetwork = require("./newsNetwork.js");
 var url = require("url");
 
 newsNetwork.getCache("motherjones", function(cache) {
-    console.log(cache);
+    console.log("ITS DONE!");
+    // console.log(cache);
 });
 
 function randomInt(min, max) { // [min, max] not [min, max)

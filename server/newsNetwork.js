@@ -248,19 +248,27 @@ var url = 'mongodb://localhost:27017/news';
 
 function getCache(newsNetworkName, callback) {
     mongodb.MongoClient.connect(url, function(err, db) {
-      //assert.equal(null, err);
-      console.log("Connected successfully to server");
+        if (err != null) {
+          console.log("error?");
+          console.log(err);
+        }
+        else {
+            console.log("Connected successfully to server");
+        }
 
       // check database for cache
       mongodb.findDocument(db, {'name': newsNetworkName},function(result) {
           // if news network is found
           if (1 <= result.length) {
-              var network = result;
+              console.log("network found");
+              console.log(result);
+              var network = result[0];
 
               // if lastUpdate was less than 1 hour ago
               var hour = 60*60*1000;
               if (network.lastUpdate > Date.now() - hour) {
                   callback(network.cache);
+                  db.close();
               }
               else {
                   // check rss
@@ -269,11 +277,10 @@ function getCache(newsNetworkName, callback) {
 
           }
           else {
-              getCacheFromRssAndUpdate(db, newsNetworkName, callback)
+              console.log("network not found");
+              getCacheFromRssAndCreate(db, newsNetworkName, callback)
           }
       });
-
-      db.close();
     });
     // check database
     // return cache
@@ -293,7 +300,8 @@ function getCacheFromRssAndCreate(db, newsNetworkName, callback) {
         newsNetwork.cache = cache;
         var set = {"$set": newsNetwork};
         mongodb.insertDocument(db, set, function(result) {
-
+            console.log("Added to Database");
+            db.close();
         });
         callback(cache);
     });
@@ -307,7 +315,7 @@ function getCacheFromRssAndUpdate(db, newsNetworkName, callback) {
         newsNetwork.cache = cache;
         var set = {"$set": newsNetwork};
         mongodb.updateDocument(db, {'name': newsNetworkName}, set, function(result) {
-
+            db.close();
         });
         callback(cache);
     });
