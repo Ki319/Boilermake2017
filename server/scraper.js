@@ -3,9 +3,6 @@ var request = require("request");
 var querystring = require("querystring");
 var cheerio = require("cheerio");
 
-module = {};
-module.exports = {};
-
 module.networkSource = { // + delimited
     "vox": "http://www.vox.com/results?q=",
     "huffingtonpost": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
@@ -31,7 +28,7 @@ module.scrapeNetwork = {
     }
 };
 
-function scrape(network, article, callback) {
+module.exports.scrape = function(network, article, callback) {
     if (typeof network == "string") {
         network = newsNetwork.getNewsNetwork(network);
     }
@@ -54,5 +51,3 @@ function scrape(network, article, callback) {
         callback(module.scrapeNetwork[network.name]($));
     });
 }
-
-module.exports.scrape = scrape;
