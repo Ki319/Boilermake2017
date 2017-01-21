@@ -16,7 +16,6 @@ function randomInt(min, max) { // [min, max] not [min, max)
       return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/*
 http.createServer(function (req, res) {
     var body = [];
 
@@ -122,6 +121,5 @@ http.createServer(function (req, res) {
         console.error(err.stack);
     });
 }).listen(9090, "0.0.0.0");
-*/
 
 console.log("Server running on port 9090.");
