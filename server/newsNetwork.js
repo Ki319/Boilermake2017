@@ -248,25 +248,27 @@ var url = 'mongodb://localhost:27017/news';
 
 function getCache(newsNetworkName, callback) {
     mongodb.MongoClient.connect(url, function(err, db) {
-      //assert.equal(null, err);
-      console.log("Connected successfully to server");
+        if (err != null) {
+          console.log("error?");
+          console.log(err);
+        }
+        else {
+            console.log("Connected successfully to server");
+        }
 
       // check database for cache
-      mongodb.findDocument(db, {'name': newsNetworkName},function(err, result) {
-          if (err != null) {
-              console.log("error: " + err.name);
-          }
-          console.log(result);
-          console.log(result.result);
-          console.log(result.result.n);
+      mongodb.findDocument(db, {'name': newsNetworkName},function(result) {
           // if news network is found
-          if (1 == result.result.n) {
-              var network = result.result;
+          if (1 <= result.length) {
+              console.log("network found");
+              console.log(result);
+              var network = result[0].data;
 
               // if lastUpdate was less than 1 hour ago
               var hour = 60*60*1000;
               if (network.lastUpdate > Date.now() - hour) {
                   callback(network.cache);
+                  db.close();
               }
               else {
                   // check rss
@@ -275,12 +277,10 @@ function getCache(newsNetworkName, callback) {
 
           }
           else {
-              getCacheFromRssAndUpdate(db, newsNetworkName, callback)
+              console.log("network not found");
+              getCacheFromRssAndCreate(db, newsNetworkName, callback)
           }
       });
-
-
-      db.close();
     });
     // check database
     // return cache
@@ -298,9 +298,11 @@ function getCacheFromRssAndCreate(db, newsNetworkName, callback) {
         var newsNetwork = getNewsNetwork(newsNetworkName);
         newsNetwork.lastUpdate = Date.now();
         newsNetwork.cache = cache;
-        var set = {"$set": newsNetwork};
+        console.log(newsNetwork);
+        var set = {"name": newsNetworkName, "data": newsNetwork};
         mongodb.insertDocument(db, set, function(result) {
-
+            console.log("Added to Database");
+            db.close();
         });
         callback(cache);
     });
@@ -312,9 +314,13 @@ function getCacheFromRssAndUpdate(db, newsNetworkName, callback) {
         var newsNetwork = getNewsNetwork(newsNetworkName);
         newsNetwork.lastUpdate = Date.now();
         newsNetwork.cache = cache;
-        var set = {"$set": newsNetwork};
+        var set = {"$set":
+        {
+            "data.lastUpdate": newsNetwork.lastUpdate,
+            "data.cache": newsNetwork.cache,
+        }};
         mongodb.updateDocument(db, {'name': newsNetworkName}, set, function(result) {
-
+            db.close();
         });
         callback(cache);
     });
@@ -325,7 +331,7 @@ function getCacheFromRss(newsNetworkName, callback) {
     var newsNetwork = getNewsNetwork(newsNetworkName);
     parser.parseURL(newsNetwork.rss, function(err, parsed) {
         var cache = [];
-        rssReader[network](entry, cache);
+        rssReader[newsNetworkName](parsed, cache);
         callback(cache);
     });
 }
