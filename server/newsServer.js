@@ -16,6 +16,6 @@ http.createServer(function (req, res) {
         console.error(err.stack);
     });
 
-}).listen(8080, "127.0.0.1");
+}).listen(8080, "0.0.0.0");
 
 console.log("Server running on port 8080.");
