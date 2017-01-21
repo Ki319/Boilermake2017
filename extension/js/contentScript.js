@@ -1,4 +1,9 @@
-var newsSites = [];
+var newsSites = ["cnn", "vox", "motherjones", "huffingtonpost",
+		"salon", "wnd", "breitbart", "theblaze", "foxnews", 
+		"washingtontimes", "wsj", "forbes", "realclearpolitics",
+		"usatoday", "abcnews", "cbsnews", "washingtonpost",
+		"time", "nytimes", "npr", "msnbc", "mediamatters",
+		"thenation", "alternet", "politico", "thehill", "rollcall"];
 var canvas;
 var context;
 var interval;
