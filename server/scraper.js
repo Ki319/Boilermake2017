@@ -4,15 +4,16 @@ var querystring = require("querystring");
 var cheerio = require("cheerio");
 
 module = {};
+module.exports = {};
 
-module.networkSource = [ // + delimited
+module.networkSource = { // + delimited
     "vox": "http://www.vox.com/results?q=",
     "huffingtonpost": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
     "wnd": "http://www.wnd.com/?s=",
     "breitbart": "http://www.breitbart.com/search/?s="
-];
+};
 
-module.scrapeNetwork = [
+module.scrapeNetwork = {
     "vox": function($) {
         var top = $('.gsc-webResult .gsc-result').first().children().first();
 
@@ -29,11 +30,11 @@ module.scrapeNetwork = [
     "huffingtonpost": function($) {
         // ...
     }
-];
+};
 
 module.exports.scrape = function(network, article, callback) {
     if (typeof network == "string") {
-        network = newsNetwork.getNewsNetwork(network)
+        network = newsNetwork.getNewsNetwork(network);
     }
 
     if (!network.searchable) {
