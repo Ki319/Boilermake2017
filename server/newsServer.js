@@ -8,7 +8,29 @@ var rssList = [
     'http://rss.cnn.com/rss/cnn_topstories.rss', // cnn
     'http://feeds.feedburner.com/motherjones/main', // motherjones
     'http://www.huffingtonpost.com/feeds/index.xml', // huffington
-    'http://www.salon.com/feed/' // salon
+    'http://www.salon.com/feed/', // salon
+    'http://www.wnd.com/feed/', // wnd
+    'https://feeds.feedburner.com/breitbart', // breitbart
+    'http://www.theblaze.com/rss', // the blaze
+    'http://feeds.foxnews.com/foxnews/latest', // fox news
+    'http://www.washingtontimes.com/rss/headlines/news/', // washington times
+    'http://www.wsj.com/xml/rss/3_7085.xml', // wall street journal (world news)
+    'https://www.forbes.com/real-time/feed2/', // forbes
+    'https://feeds.feedburner.com/realclearpolitics/qlMj', // real clear politics
+    'http://rssfeeds.usatoday.com/usatoday-NewsTopStories', // usa today
+    'http://feeds.abcnews.com/abcnews/topstories', // abc news
+    'http://www.cbsnews.com/latest/rss/main', // cbs news
+    'http://feeds.washingtonpost.com/rss/politics', // washington post
+    'http://time.com/feed/', // time
+    'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml', // ny times
+    'http://www.npr.org/rss/rss.php?id=1001', // npr (top stories)
+    'http://www.msnbc.com/feeds/latest', // msnbc
+    'http://mediamatters.org/rss/all.rss', // media matters
+    'https://www.thenation.com/feed/?post_type=article', // the nation
+    'https://feeds.feedblitz.com/alternet', // alternet
+    'http://www.politico.com/rss/politics08.xml', //politico
+    'http://thehill.com/rss/syndicator/19110', // the hill
+    'http://www.rollcall.com/rss/tag/rss-feed/all-news' // roll call
 ]
 
 setInterval(function() {
