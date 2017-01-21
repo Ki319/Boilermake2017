@@ -9,12 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
     "request": "^2.79.0",
     "rss-parser": "^2.5.2"
-=======
-    "cheerio": "^0.22.0",
-    "request": "^2.79.0"
->>>>>>> 5fd87cea4efb4633d7a5b0995bdaac9d8f8e7a14
   }
 }
