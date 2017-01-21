@@ -4,9 +4,9 @@ var newsNetwork = require("./newsNetwork.js");
 var url = require("url");
 var scraper = require("./scraper.js");
 
-newsNetwork.getCache("vox", function(cache) {
+newsNetwork.getCache("cnn", function(cache) {
     console.log("ITS DONE!");
-    console.log(cache);
+    console.log(cache[0]);
 });
 
 function randomInt(min, max) { // [min, max] not [min, max)

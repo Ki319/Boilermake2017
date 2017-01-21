@@ -114,12 +114,15 @@ rssReader["vox"] = createGeneralReader(function(entry) {
 });
 
 rssReader["cnn"] = createGeneralReader(function(entry) {
-    return entry.image;
+    console.log(entry);
+    return entry.enclosure.link;
 });
 rssReader["motherjones"] = createGeneralReader(function(entry) {
+    console.log(entry);
     return entry.image;
 });
 rssReader["huffingtonpost"] = createGeneralReader(function(entry) {
+    console.log(entry);
     return entry.image;
 });
 rssReader["salon"] = createGeneralReader(function(entry) {
