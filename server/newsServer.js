@@ -2,6 +2,7 @@ var http = require("http");
 var request = require("request");
 var querystring = require("querystring");
 var parser = require("rss-parser");
+var cheerio = require("cheerio");
 
 parser.parseURL('http://www.vox.com/rss/index.xml', function(err, parsed) {
     console.log(parsed.feed.title);
@@ -21,7 +22,16 @@ parser.parseURL('http://rss.cnn.com/rss/cnn_topstories.rss', function(err, parse
 var sources = [];
 
 sources["cnn"] = function (article) {
-
+    var query = querystring.stringify({query: article});
+    request("http://www.cnn.com/search/?text=" + query, function(error, response, html) {
+        if (error) {
+            console.error(error);
+            return null;
+        } else {
+            var $ = cheerio.load(html);
+            var href = $(".cd__headline-text").first().parent();
+        }
+    });
 }
 */
 
@@ -45,7 +55,7 @@ http.createServer(function (req, res) {
 
 
         res.writeHead(200, {"Content-Type": "text/plain"});
-        res.end("# POST DATA:\n" + body + "\n");
+        res.end("http://hmpg.net/downloadwww.gif\nhttp://hmpg.net/\nThis is the Trump era.\n");
 
         body = [];
     }).on("error", function(err) {
