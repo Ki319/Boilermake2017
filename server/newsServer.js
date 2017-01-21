@@ -2,7 +2,6 @@ var http = require("http");
 var request = require("request");
 var querystring = require("querystring");
 var parser = require("rss-parser");
-var cheerio = require("cheerio");
 
 var rssList = [
     'http://www.vox.com/rss/index.xml', // vox
@@ -12,12 +11,47 @@ var rssList = [
     'http://www.salon.com/feed/' // salon
 ]
 
-parser.parseURL(rssList[2], function(err, parsed) {
-    console.log(parsed.feed.title);
-    parsed.feed.entries.forEach(function(entry) {
-        console.log(entry.title + ':' + entry.link);
+setInterval(function() {
+    /*
+    scrapeAllRss(function(network, articles) {
+        if (network == "vox") {
+            articles.feed.entries.forEach(function(entry) {
+                console.log(entry.title);
+                console.log(entry.link);
+                var re = new RegExp("^<img.*src=\".*\" \/>");
+                var image = re.exec(entry.content);
+                if(image != null) {
+                    console.log(image);
+                }
+            });
+        }
+        else {
+            articles.feed.entries.forEach(function(entry) {
+                console.log(entry.title);
+                console.log(entry.link);
+            });
+        }
     });
-});
+    */
+}, 30 * 60 * 1000);
+
+var info = {
+    "title": "",
+    "title": "",
+    "url": "",
+    "image": "",
+    "title": "",
+}
+
+function scrapeAllRss(callback) {
+    parser.parseURL(rssList[2], function(err, parsed) {
+        console.log(parsed.feed.title);
+        parsed.feed.entries.forEach(function(entry) {
+            console.log(entry.title + ':' + entry.link);
+        });
+        callback(network, parsed.feed);
+    });
+}
 
 /*
 var sources = [];
@@ -40,6 +74,7 @@ function scrapeSource(source, article) {
     console.log("Scraping " + source + " for '" + article + "'.")
     sources[source](article);
 }
+
 
 http.createServer(function (req, res) {
     var body = [];
