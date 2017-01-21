@@ -68,6 +68,28 @@ function getNewsNetwork(network) {
     }
 }
 
+function getNewsNetworkByDomain(domain) {
+    for (var i = 0; i < rssList.length; i++) {
+        if (rssList[i].domain.indexOf(domain) >= 0) {
+            return rssList[i];
+        }
+    }
+}
+
+function getNewsNetworksByLean(low, high) {
+    if (high < low) {
+        var temp = high;
+        high = low;
+        low = temp;
+    }
+    var results = [];
+    for (var i = 0; i < rssList.length; i++) {
+        if (rssList[i].lean >= low && rssList[i].lean <= high) {
+            results.push(rssList[i]);
+        }
+    }
+    return results;
+}
 
 var rssReader = [];
 
@@ -132,6 +154,10 @@ function startFeedReader() {
         clearInterval(refreshIntervalId);
     },  1000);
 }
+
+module.exports.getNewsNetwork = getNewsNetwork;
+module.exports.getNewsNetworksByLean = getNewsNetworksByLean;
+module.exports.getNewsNetworkByDomain = getNewsNetworkByDomain;
 
 module.exports.startFeedReader = startFeedReader;
 module.exports.rssList = rssList;
