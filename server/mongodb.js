@@ -2,11 +2,11 @@
 var MongoClient = require('mongodb').MongoClient
   , assert = require('assert');
 
-var insertDocument = function(db, document, callback) {
+var insertDocument = function(db, documents, callback) {
   // Get the documents collection
   var collection = db.collection('documents');
   // Insert some documents
-  collection.insertOne(document, function(err, result) {
+  collection.insertOne(documents, function(err, result) {
 
     callback(result);
   });
