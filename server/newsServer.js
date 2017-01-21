@@ -1,9 +1,8 @@
 var http = require("http");
-var request = require("request");
-var querystring = require("querystring");
 var mongodb = require("./mongodb.js");
 var newsNetwork = require("./newsNetwork.js");
 var url = require("url");
+var scraper = require("./scraper.js");
 
 newsNetwork.getCache("motherjones", function(cache) {
     console.log("ITS DONE!");
@@ -28,6 +27,7 @@ function getUser(uuid, lean, callback)
 	var user = null;
 	mongodb.MongoClient.connect('mongodb://localhost:27016/news', function(err, db)
 	{
+        console.log(err);
 		console.log("Connected to MongoDB");
 
         db.users.find({'userid' : uuid}, function(result) {
@@ -81,45 +81,47 @@ http.createServer(function (req, res) {
         data = body.split("\n");
         var uuid = data[0];
         var link = url.parse(data[1]);
+        var title = data[2];
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
 
-		var user = getUser(uuid, network.lean, function(user) {
-			var time = Math.round(Date.now() / 60000);
-			var sum = 0;
-			var weights = 0;
-			var weight = 0;
-			var cleanList = [];
-			for(var i = 0; i < user.history.length; i++)
-			{
-				var obj = user.history[i];
-				weight = Math.pow(Math.E, (obj.timestamp - time) / 1);
-				if(weight < .001)
+		scraper.scrape(network, title, function() {
+			getUser(uuid, network.lean, function(user) {
+				var time = Math.round(Date.now() / 60000);
+				var sum = 0;
+				var weights = 0;
+				var weight = 0;
+				var cleanList = [];
+				for(var i = 0; i < user.history.length; i++)
 				{
-					cleanList.push(obj);
+					var obj = user.history[i];
+					weight = Math.pow(Math.E, (obj.timestamp - time) / 1);
+					if(weight < .001)
+					{
+						cleanList.push(obj);
+					}
+					sum += obj.lean * weight;
+					weights += weight;
 				}
-				sum += obj.lean * weight;
-				weights += weight;
-			}
-			sum /= weights;
+				sum /= weights;
 			
-			findArticle(network, sum, function(article) {
-				var responseMsg = "";
-				res.writeHead(200, {"Content_Type" : "text/plain"});
-				if(article != null)
+				findArticle(network, sum, function(article) {
+					var responseMsg = "";
+					res.writeHead(200, {"Content_Type" : "text/plain"});
+					if(article != null)
+					{
+						responseMsg = article.url + "\n";
+						responseMsg += article.caption + "\n";
+						responseMsg += article.imageUrl;
+					}
+					res.end(responseMsg);
+				});
+			
+				for(var i = 0; i < cleanList.length; i++)
 				{
-					responseMsg = article.url + "\n";
-					responseMsg += article.caption + "\n";
-					responseMsg += article.imageUrl;
+					var obj = cleanList[i];
+					obj.remove();
 				}
-				res.end(responseMsg);
 			});
-			
-			for(var i = 0; i < cleanList.length; i++)
-			{
-				var obj = cleanList[i];
-				obj.remove();
-			}
-			
 		});
     }).on("error", function(err) {
         console.error(err.stack);
