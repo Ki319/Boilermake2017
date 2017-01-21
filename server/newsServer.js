@@ -1,12 +1,29 @@
 var http = require("http");
 var request = require("request");
 var querystring = require("querystring");
+var parser = require("rss-parser");
 
+parser.parseURL('http://www.vox.com/rss/index.xml', function(err, parsed) {
+    console.log(parsed.feed.title);
+    parsed.feed.entries.forEach(function(entry) {
+        console.log(entry.title + ':' + entry.link);
+    });
+});
+
+parser.parseURL('http://rss.cnn.com/rss/cnn_topstories.rss', function(err, parsed) {
+    console.log(parsed.feed.title);
+    parsed.feed.entries.forEach(function(entry) {
+        console.log(entry.title + ':' + entry.link);
+    });
+});
+
+/*
 var sources = [];
 
 sources["cnn"] = function (article) {
 
 }
+*/
 
 function scrapeSource(source, article) {
     console.log("Scraping " + source + " for '" + article + "'.")
