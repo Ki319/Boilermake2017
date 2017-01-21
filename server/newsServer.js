@@ -1,7 +1,7 @@
 var http = require("http");
 var request = require("request");
 var querystring = require("querystring");
-var parser = require("rss-parser");
+var mongodb = require("./mongodb.js");
 var newsNetwork = require("./newsNetwork.js");
 
 newsNetwork.startFeedReader();

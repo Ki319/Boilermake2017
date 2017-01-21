@@ -1,7 +1,5 @@
-var http = require("http");
-var request = require("request");
-var querystring = require("querystring");
 var parser = require("rss-parser");
+var mongodb = require("./mongodb.js");
 
 var rssList = [
     {name: "vox", domain: "www.vox.com", rss: 'http://www.vox.com/rss/index.xml', lean: -0.67, cache: []},
@@ -74,7 +72,7 @@ function getNewsNetwork(network) {
 
 var rssReader = [];
 
-rssReader["vox"] = createGeneralReader(function(obj, entry) {
+rssReader["vox"] = createGeneralReader(function(entry) {
     var re = [];
     re[0] = new RegExp("^<img.*src=\".*\" \/>");
     re[1] = new RegExp("src=\".*\"");
@@ -88,12 +86,10 @@ rssReader["vox"] = createGeneralReader(function(obj, entry) {
             image = image[0];
         }
         else {
-            break;
+            return "";
         }
     }
-    if(image != null) {
-        image = image.substring(1, image.length - 1);
-    }
+    image = image.substring(1, image.length - 1);
     return image;
 });
 
@@ -199,9 +195,20 @@ function scrapeAllRss(callback) {
 }
 
 function startFeedReader() {
+    // connect to mongodb
+    MongoClient.connect(url, function(err, db) {
+        // check if we up to date cache
+
     scrapeAllRss(function(network, articles) {
-        var newsNetwork = getNewsNetwork(network);
-        rssReader[network](articles, newsNetwork.cache);
+          assert.equal(null, err);
+          console.log("Connected successfully to server");
+
+          //
+          var newsNetwork = getNewsNetwork(network);
+          rssReader[network](articles, newsNetwork.cache);
+
+          db.close();
+        });
     });
     /*
     var refreshIntervalId = setInterval(function() {
@@ -213,6 +220,10 @@ function startFeedReader() {
         clearInterval(refreshIntervalId);
     }, 1000);
     */
+}
+
+function getEntry() {
+
 }
 
 module.exports.startFeedReader = startFeedReader;
