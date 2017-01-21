@@ -1,4 +1,5 @@
-
+var parser = require("rss-parser");
+var mongodb = require("./mongodb.js");
 
 var rssList = [
     {name: "vox", domain: "www.vox.com", rss: 'http://www.vox.com/rss/index.xml', lean: -0.67, cache: []},
@@ -93,71 +94,245 @@ function getNewsNetworksByLean(low, high) {
 
 var rssReader = [];
 
-rssReader["vox"] = function(articles, cache) {
+rssReader["vox"] = createGeneralReader(function(entry) {
     var re = [];
     re[0] = new RegExp("^<img.*src=\".*\" \/>");
     re[1] = new RegExp("src=\".*\"");
     re[2] = new RegExp("\".*\"");
-    articles.feed.entries.forEach(function(entry) {
-        var obj = {};
-        image.title = entry.title;
-        image.url = entry.link;
 
-        var image = entry.content;
+    var image = entry.content;
 
-        for (var i = 0; i < re.length; i++) {
-            image = re[i].exec(image);
-            if(image != null) {
-                image = image[0];
-            }
-            else {
-                break;
-            }
-        }
+    for (var i = 0; i < re.length; i++) {
+        image = re[i].exec(image);
         if(image != null) {
-            image = image.substring(1, image.length - 1);
+            image = image[0];
         }
-        obj.img = image;
-        cache.push(obj);
-    }, cache, re);
-}
+        else {
+            return "";
+        }
+    }
+    image = image.substring(1, image.length - 1);
+    return image;
+});
 
-function generalReader(articles, cache, entryFunction) {
-    articles.feed.entries.forEach(function(entry) {
-        var obj = {};
-        image.title = entry.title;
-        image.url = entry.link;
-        entryFunction(obj);
-        cache.push(obj);
-    }, cache, entryFunction);
+rssReader["cnn"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["motherjones"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["huffingtonpost"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["salon"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["wnd"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["breitbart"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["theblaze"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["foxnews"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["washingtontimes"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["wsj"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["forbes"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["realclearpolitics"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["usatoday"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["abcnews"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["cbsnews"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["washingtonpost"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["time"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["nytimes"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["npr"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["msnbc"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["mediamatters"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["thenation"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["alternet"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["politico"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["thehill"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+rssReader["rollcall"] = createGeneralReader(function(entry) {
+    return entry.image;
+});
+
+function createGeneralReader(entryFunction) {
+    return function(articles, cache) {
+        articles.feed.entries.forEach(function(entry) {
+            var obj = {};
+            obj.title = entry.title;
+            obj.url = entry.link;
+            obj.image = entryFunction(entry);
+            cache.push(obj);
+        }, cache, entryFunction);
+    };
 }
 
 function scrapeAllRss(callback) {
-    parser.parseURL(rssList[2], function(err, parsed) {
+    parser.parseURL(rssList[0].rss, function(err, parsed) {
         console.log(parsed.feed.title);
         parsed.feed.entries.forEach(function(entry) {
             console.log(entry.title + ':' + entry.link);
         });
-        callback(network, parsed.feed);
+        callback(rssList[0].name, parsed);
     });
 }
 
 function startFeedReader() {
+
+    scrapeAllRss(function(network, articles) {
+        // connect to mongodb
+        MongoClient.connect(url, function(err, db) {
+            // check if we up to date cache
+          assert.equal(null, err);
+          console.log("Connected successfully to server");
+
+          //
+          var newsNetwork = getNewsNetwork(network);
+          rssReader[network](articles, newsNetwork.cache);
+
+          db.close();
+        });
+    });
+    /*
     var refreshIntervalId = setInterval(function() {
         console.log('intervalSet');
-        /*
         scrapeAllRss(function(network, articles) {
             var newsNetwork = getNewsNetwork(network);
             rssReader[network](articles, newsNetwork.cache);
         });
-        */
         clearInterval(refreshIntervalId);
-    },  1000);
+    }, 1000);
+    */
+}
+
+var url = 'mongodb://localhost:27017/news';
+
+function getCache(newsNetworkName, callback) {
+    mongodb.MongoClient.connect(url, function(err, db) {
+      //assert.equal(null, err);
+      console.log("Connected successfully to server");
+
+      // check database for cache
+      mongodb.findDocument(db, {'name': newsNetworkName},function(err, result) {
+          if (err != null) {
+              console.log("error: " + err.name);
+          }
+          console.log(result);
+          console.log(result.result);
+          console.log(result.result.n);
+          // if news network is found
+          if (1 == result.result.n) {
+              var network = result.result;
+
+              // if lastUpdate was less than 1 hour ago
+              var hour = 60*60*1000;
+              if (network.lastUpdate > Date.now() - hour) {
+                  callback(network.cache);
+              }
+              else {
+                  // check rss
+                  getCacheFromRssAndUpdate(db, newsNetworkName, callback)
+              }
+
+          }
+          else {
+              getCacheFromRssAndUpdate(db, newsNetworkName, callback)
+          }
+      });
+
+
+      db.close();
+    });
+    // check database
+    // return cache
+
+    // on failure/more than 1 hour ago
+    // check rss
+    // add cache to database
+    // return cache
+
+    // return cache
+}
+
+function getCacheFromRssAndCreate(db, newsNetworkName, callback) {
+    getCacheFromRss(newsNetworkName, function(cache) {
+        var newsNetwork = getNewsNetwork(newsNetworkName);
+        newsNetwork.lastUpdate = Date.now();
+        newsNetwork.cache = cache;
+        var set = {"$set": newsNetwork};
+        mongodb.insertDocument(db, set, function(result) {
+
+        });
+        callback(cache);
+    });
+}
+
+// DONE
+function getCacheFromRssAndUpdate(db, newsNetworkName, callback) {
+    getCacheFromRss(newsNetworkName, function(cache) {
+        var newsNetwork = getNewsNetwork(newsNetworkName);
+        newsNetwork.lastUpdate = Date.now();
+        newsNetwork.cache = cache;
+        var set = {"$set": newsNetwork};
+        mongodb.updateDocument(db, {'name': newsNetworkName}, set, function(result) {
+
+        });
+        callback(cache);
+    });
+}
+
+// DONE
+function getCacheFromRss(newsNetworkName, callback) {
+    var newsNetwork = getNewsNetwork(newsNetworkName);
+    parser.parseURL(newsNetwork.rss, function(err, parsed) {
+        var cache = [];
+        rssReader[network](entry, cache);
+        callback(cache);
+    });
 }
 
 module.exports.getNewsNetwork = getNewsNetwork;
 module.exports.getNewsNetworksByLean = getNewsNetworksByLean;
 module.exports.getNewsNetworkByDomain = getNewsNetworkByDomain;
 
-module.exports.startFeedReader = startFeedReader;
 module.exports.rssList = rssList;
+module.exports.getCache = getCache;

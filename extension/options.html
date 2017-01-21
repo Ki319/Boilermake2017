@@ -2,19 +2,56 @@
 <html>
 
 <head>
+	
     <title>News in Moderation</title>
+	
+	<script>
+	function getRandomToken() {
+		// E.g. 8 * 32 = 256 bits token
+		var randomPool = new Uint8Array(32);
+		crypto.getRandomValues(randomPool);
+		var hex = '';
+		for (var i = 0; i < randomPool.length; ++i) {
+			hex += randomPool[i].toString(16);
+		}
+		// E.g. db18458e2782b2b77e36769c569e263a53885a9944dd0a861e5064eac16f1a
+		return hex;
+	}
+
+	chrome.storage.sync.get('userid', function(items) {
+		var userid = items.userid;
+		if (userid) {
+			useToken(userid);
+		} else {
+			userid = getRandomToken();
+			chrome.storage.sync.set({userid: userid}, function() {
+				useToken(userid);
+			});
+		}
+		function useToken(userid) {
+			// TODO: Use user id for authentication or whatever you want.
+			alert(userid);
+		}
+	});
+	</script>
 </head>
 
 <body>
+	<div>
+	<a>Please slide this bar to indicate how many different politic views you wish to see.</a>
+	</div>
+	<input id="ex4" type="text" data-slider-min="-5" data-slider-max="20" data-slider-step="1" data-slider-value="-3" />	
 
-    Here is the options menu.
+	<div>
+	<a>Black List Topics</a>
+	</div>
+
+	<textarea name="Text1" cols="40" rows="10" > </textarea>
 
     <div id="display">DISPLAY IN PROGRESS</div>
 
     <div id="status"></div>
-    <button id="save">Save</button>
-
-    <script src="options.js"></script>
+    <button id="save" onclick="save()">Save</button>
 </body>
 
 </html>
