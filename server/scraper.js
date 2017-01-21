@@ -19,11 +19,10 @@ module.scrapeNetwork = {
 
         var link = $('a.gs-title').first().attr("href");
         var title = $('a.gs-title').first().text();
-        var desc = $('div.gs-bidi-start-align gs-snippet').first().text();
         var img = $('img.gs-image').first().attr("src");
 
-        console.log("LINK: " + link, "TITLE: " + title, "DESC: " + desc, "IMG: " + img);
-        return {"url": link, "title": title, "desc": desc, "img": img};
+        console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        return {"url": link, "title": title, "img": img};
         //top.children('.gsc-thumbnail-inside').first().
 
     },
@@ -32,7 +31,7 @@ module.scrapeNetwork = {
     }
 };
 
-module.exports.scrape = function(network, article, callback) {
+function scrape(network, article, callback) {
     if (typeof network == "string") {
         network = newsNetwork.getNewsNetwork(network);
     }
@@ -55,3 +54,5 @@ module.exports.scrape = function(network, article, callback) {
         callback(module.scrapeNetwork[network.name]($));
     });
 }
+
+module.exports.scrape = scrape;
