@@ -19,8 +19,7 @@ var findDocument = function(db, queryFilter, callback) {
   // Find some documents
   collection.find(queryFilter).toArray(function(err, docs) {
     assert.equal(err, null);
-    console.log("Found the following records");
-    console.log(docs)
+    console.log("Found the following records: " + docs);
     callback(docs);
   });
 }

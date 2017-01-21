@@ -252,16 +252,10 @@ function getCache(newsNetworkName, callback) {
       console.log("Connected successfully to server");
 
       // check database for cache
-      mongodb.findDocument(db, {'name': newsNetworkName},function(err, result) {
-          if (err != null) {
-              console.log("error: " + err.name);
-          }
-          console.log(result);
-          console.log(result.result);
-          console.log(result.result.n);
+      mongodb.findDocument(db, {'name': newsNetworkName},function(result) {
           // if news network is found
-          if (1 == result.result.n) {
-              var network = result.result;
+          if (1 <= result.length) {
+              var network = result;
 
               // if lastUpdate was less than 1 hour ago
               var hour = 60*60*1000;
@@ -278,7 +272,6 @@ function getCache(newsNetworkName, callback) {
               getCacheFromRssAndUpdate(db, newsNetworkName, callback)
           }
       });
-
 
       db.close();
     });
@@ -325,7 +318,7 @@ function getCacheFromRss(newsNetworkName, callback) {
     var newsNetwork = getNewsNetwork(newsNetworkName);
     parser.parseURL(newsNetwork.rss, function(err, parsed) {
         var cache = [];
-        rssReader[network](entry, cache);
+        rssReader[newsNetworkName](parsed, cache);
         callback(cache);
     });
 }
