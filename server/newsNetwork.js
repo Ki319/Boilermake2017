@@ -222,9 +222,18 @@ function startFeedReader() {
     */
 }
 
-function getEntry() {
+function getEntryList(newsNetworkName) {
+    // check database
+    // return cache
 
+    // on failure/more than 1 hour ago
+    // check rss
+    // add cache to database
+    // return cache
+
+    // return cache
 }
 
 module.exports.startFeedReader = startFeedReader;
 module.exports.rssList = rssList;
+module.exports.getEntryList = getEntryList;
