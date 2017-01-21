@@ -44,6 +44,7 @@ http.createServer(function (req, res) {
     }).on("end", function() {
         body = Buffer.concat(body).toString();
 
+
         if (body == null || body == "") {
             console.error("Received no POST data.");
             res.writeHead(200, {"Content-Type": "text/plain"});
@@ -51,7 +52,9 @@ http.createServer(function (req, res) {
             return;
         }
 
-        var link = url.parse(body);
+        data = body.split("\n");
+        var uuid = data[0];
+        var link = url.parse(data[1]);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
 
         console.log ("User is reading from '" + network.name + "' with political lean " + network.lean + ".");
@@ -60,9 +63,21 @@ http.createServer(function (req, res) {
         if (network.lean < 0) { // Shift left to right.
             minLean = network.lean + 0.2;
             maxLean = network.lean + 0.5;
+            if (minLean > 0) {
+                minLean = network.lean + 0.001;
+                maxLean = 0;
+            } else if (maxLean > 0) {
+                maxLean = 0;
+            }
         } else if (network.lean > 0) { // Shift right to left.
             minLean = network.lean - 0.2;
             maxLean = network.lean - 0.5;
+            if (minLean < 0) {
+                minLean = network.lean - 0.001;
+                maxLean = 0;
+            } else if (maxLean < 0) {
+                maxLean = 0;
+            }
         } else {
             console.log("Network '" + network.name + "' has no lean, returning null.");
             res.writeHead(200, {"Content-Type": "text/plain"});

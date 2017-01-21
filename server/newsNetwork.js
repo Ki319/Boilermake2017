@@ -32,13 +32,13 @@ var rssList = [
 ];
 
 /*
-vox
+vox [searchable]
 cnn
 motherjones
-huffingtonpost
-salon
-wnd
-breitbart
+huffingtonpost [searchable](?)
+salon [searchable](bad)
+wnd [searchable]
+breitbart [searchable]
 theblaze
 foxnews
 washingtontimes
