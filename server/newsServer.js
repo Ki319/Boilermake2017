@@ -53,9 +53,12 @@ function getUser(uuid, lean, callback)
 	});
 }
 
-function findNetwork(lean, callback)
+function findArticle(network, lean, callback)
 {
-	
+	var newLean = lean - (lean / Math.abs(lean)) * (randomInt(30, 100)) / 400;
+	newsNetwork.getNewsNetworkByLean(network, lean, newLean, function(newNetwork) {
+		callback(newNetwork.cache[randomInt(0, newNetwork.cache.length - 1)]);
+	});
 }
 
 http.createServer(function (req, res) {
@@ -85,9 +88,15 @@ http.createServer(function (req, res) {
 			var sum = 0;
 			var weights = 0;
 			var weight = 0;
-			for(var obj in user.history)
+			var cleanList = [];
+			for(var i = 0; i < user.history.length; i++)
 			{
+				var obj = user.history[i];
 				weight = Math.pow(Math.E, (obj.timestamp - time) / 1);
+				if(weight < .001)
+				{
+					cleanList.push(obj);
+				}
 				sum += obj.lean * weight;
 				weights += weight;
 			}
@@ -104,6 +113,12 @@ http.createServer(function (req, res) {
 				}
 				res.end(responseMsg);
 			});
+			
+			for(var i = 0; i < cleanList.length; i++)
+			{
+				var obj = cleanList[i];
+				obj.remove();
+			}
 			
 		});
     }).on("error", function(err) {
