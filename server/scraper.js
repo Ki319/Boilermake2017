@@ -38,11 +38,11 @@ module.exports.scrape = function(network, article, callback) {
         return null;
     }
 
-    var link = module.networkSource[network.name] + article.replace(" ", "+");
+    var link = module.networkSource[network.name] + article.split(" ").join("+");
     console.log("Scraping " + link);
 
     request(link, function(err, res, html) {
-        if (error) {
+        if (error != undefined) {
             console.error("Failed to scrape:", err.stack);
             return;
         }
