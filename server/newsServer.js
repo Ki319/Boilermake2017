@@ -23,7 +23,6 @@ http.createServer(function (req, res) {
     }).on("end", function() {
         body = Buffer.concat(body).toString();
 
-
         if (body == null || body == "") {
             console.error("Received no POST data.");
             res.writeHead(200, {"Content-Type": "text/plain"});
