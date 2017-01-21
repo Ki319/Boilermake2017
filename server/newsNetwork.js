@@ -71,43 +71,118 @@ function getNewsNetwork(network) {
 
 var rssReader = [];
 
-rssReader["vox"] = function(articles, cache) {
+rssReader["vox"] = createGeneralReader(function(obj, entry) {
     var re = [];
     re[0] = new RegExp("^<img.*src=\".*\" \/>");
     re[1] = new RegExp("src=\".*\"");
     re[2] = new RegExp("\".*\"");
-    articles.feed.entries.forEach(function(entry) {
-        var obj = {};
-        image.title = entry.title;
-        image.url = entry.link;
 
-        var image = entry.content;
+    var image = entry.content;
 
-        for (var i = 0; i < re.length; i++) {
-            image = re[i].exec(image);
-            if(image != null) {
-                image = image[0];
-            }
-            else {
-                break;
-            }
-        }
+    for (var i = 0; i < re.length; i++) {
+        image = re[i].exec(image);
         if(image != null) {
-            image = image.substring(1, image.length - 1);
+            image = image[0];
         }
-        obj.img = image;
-        cache.push(obj);
-    }, cache, re);
+        else {
+            break;
+        }
+    }
+    if(image != null) {
+        image = image.substring(1, image.length - 1);
+    }
+    return image;
 }
 
-function generalReader(articles, cache, entryFunction) {
-    articles.feed.entries.forEach(function(entry) {
-        var obj = {};
-        image.title = entry.title;
-        image.url = entry.link;
-        entryFunction(obj);
-        cache.push(obj);
-    }, cache, entryFunction);
+rssReader["cnn"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["motherjones"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["huffingtonpost"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["salon"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["wnd"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["breitbart"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["theblaze"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["foxnews"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["washingtontimes"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["wsj"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["forbes"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["realclearpolitics"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["usatoday"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["abcnews"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["cbsnews"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["washingtonpost"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["time"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["nytimes"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["npr"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["msnbc"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["mediamatters"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["thenation"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["alternet"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["politico"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["thehill"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+rssReader["rollcall"] = createGeneralReader(function(obj, entry) {
+    return entry.image;
+}
+
+function createGeneralReader(entryFunction) {
+    return (function(articles, cache) {
+        articles.feed.entries.forEach(function(entry) {
+            var obj = {};
+            obj.title = entry.title;
+            obj.url = entry.link;
+            obj.image = entryFunction(entry);
+            cache.push(obj);
+        }, cache, entryFunction);
+    })(entryFunction);
 }
 
 function scrapeAllRss(callback) {
