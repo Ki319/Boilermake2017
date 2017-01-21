@@ -17,27 +17,6 @@ http.createServer(function (req, res) {
     var body = [];
 
     console.log("Connection established.");
-	
-	mongodb.MongoClient.connect('mongodb://localhost:27016/news', function(err, db)
-	{
-		console.log("Connected to MongoDB");
-		
-		var user = null;
-		
-		mongodb.find(db, "users", {'userid' : INSERT_USERID}, function(result) {
-				user = result[0];
-		});
-		
-		if(user == null)
-		{
-			user = {userid : INSERT_USERID, history : []};
-			mongodb.insert(db, "users", user, function(result) {
-				console.log("SUCCESFULLY CREATE NEW USER");
-			});
-		}
-		
-		db.close();
-	}
 
     req.on("data", function (buff) {
         body.push(buff);
@@ -55,6 +34,32 @@ http.createServer(function (req, res) {
         var uuid = data[0];
         var link = url.parse(data[1]);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
+
+        mongodb.MongoClient.connect('mongodb://localhost:27016/news', function(err, db)
+        {
+            console.log("Connected to MongoDB");
+
+            var user = null;
+
+            mongodb.find(db, "users", {'userid' : uuid}, function(result) {
+                    user = result[0];
+            });
+
+            if(user == null)
+            {
+                user = {userid : uuid, history : []};
+                mongodb.insert(db, "users", user, function(result) {
+                    console.log("SUCCESFULLY CREATE NEW USER");
+                });
+            }
+            var historyObj = {"lean": lean, "timestamp": Math.round(Date.now() / 60000)};
+            user.history.push(historyObj);
+
+            mongodb.collection()
+
+
+            db.close();
+        }
 
         console.log ("User is reading from '" + network.name + "' with political lean " + network.lean + ".");
 
