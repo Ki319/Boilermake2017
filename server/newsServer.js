@@ -1,4 +1,17 @@
 var http = require("http");
+var request = require("request");
+var querystring = require("querystring");
+
+var sources = [];
+
+sources["cnn"] = function (article) {
+
+}
+
+function scrapeSource(source, article) {
+    console.log("Scraping " + source + " for '" + article + "'.")
+    sources[source](article);
+}
 
 http.createServer(function (req, res) {
     var body = [];
@@ -10,8 +23,12 @@ http.createServer(function (req, res) {
     }).on("end", function() {
         body = Buffer.concat(body).toString();
 
+        url = body; // Might need parsing later.
+
+
+
         res.writeHead(200, {"Content-Type": "text/plain"});
-        res.end(JSON.stringify(req.headers) + "\n# POST DATA:\n" + body + "\n");
+        res.end("# POST DATA:\n" + body + "\n");
 
         body = [];
     }).on("error", function(err) {
