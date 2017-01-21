@@ -6,8 +6,12 @@ var newsSites = ["cnn.com", "vox.com", "motherjones.com", "huffingtonpost.com",
 		"thenation.com", "alternet.org", "politico.com", "thehill.com", "rollcall.com",
 		"drudgereport.com"];
 		
+var newsTitles = [
+	{}
+];
+		
 var newsData = [
-	{topShift : 50, toTopShift : 50, shiftWait : 150, leftShift : 20}, //cnn
+	{titleSign : "CNN", endSign : " - CNN", topShift : 50, toTopShift : 50, shiftWait : 150, leftShift : 20}, //cnn
 	{topShift : 50, toTopShift : 0, shiftWait : 250} //vox
 ];
 
@@ -23,6 +27,18 @@ var index;
 var img;
 var articleLink;
 var caption;
+
+function getRandomToken() {
+	// E.g. 8 * 32 = 256 bits token
+	var randomPool = new Uint8Array(32);
+	crypto.getRandomValues(randomPool);
+	var hex = '';
+	for (var i = 0; i < randomPool.length; ++i) {
+		hex += randomPool[i].toString(16);
+	}
+	// E.g. db18458e2782b2b77e36769c569e263a53885a9944dd0a861e5064eac16f1a
+	return hex;
+}
 
 function httpRequest(address, data, reqType, asyncProc) 
 {
@@ -148,17 +164,6 @@ function clickArticle(e)
 		canvas.parentNode.removeChild(canvas);
 	}, 400);
 }
-	function getRandomToken() {
-		// E.g. 8 * 32 = 256 bits token
-		var randomPool = new Uint8Array(32);
-		crypto.getRandomValues(randomPool);
-		var hex = '';
-		for (var i = 0; i < randomPool.length; ++i) {
-			hex += randomPool[i].toString(16);
-		}
-		// E.g. db18458e2782b2b77e36769c569e263a53885a9944dd0a861e5064eac16f1a
-		return hex;
-	}
 
 function dblClickArticle(e)
 {

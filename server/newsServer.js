@@ -53,9 +53,12 @@ function getUser(uuid, lean, callback)
 	});
 }
 
-function findNetwork(lean, callback)
+function findArticle(network, lean, callback)
 {
-
+	var newLean = lean - (lean / Math.abs(lean)) * (randomInt(30, 100)) / 400;
+	newsNetwork.getNewsNetworkByLean(network, lean, newLean, function(newNetwork) {
+		callback(newNetwork.cache[randomInt(0, newNetwork.cache.length - 1)]);
+	});
 }
 
 http.createServer(function (req, res) {
@@ -81,35 +84,44 @@ http.createServer(function (req, res) {
         var title = data[2];
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
 
-        scraper.scrape(network, title, function() {
-            var user = getUser(uuid, network.lean, function(user) {
-                var time = Math.round(Date.now() / 60000);
-                var sum = 0;
-                var weights = 0;
-                var weight = 0;
-                for(var obj in user.history)
-                {
-                    weight = Math.pow(Math.E, (obj.timestamp - time) / 1);
-                    sum += obj.lean * weight;
-                    weights += weight;
-                }
-                sum /= weights;
-
-                findArticle(network, sum, function(article) {
-                    var responseMsg = "";
-                    res.writeHead(200, {"Content_Type" : "text/plain"});
-                    if(article != null)
-                    {
-                        responseMsg = article.url + "\n";
-                        responseMsg += article.caption + "\n";
-                        responseMsg += article.imageUrl;
-                    }
-                    res.end(responseMsg);
-                });
-        });
-
-
-
+		scraper.scrape(network, title, function() {
+			getUser(uuid, network.lean, function(user) {
+				var time = Math.round(Date.now() / 60000);
+				var sum = 0;
+				var weights = 0;
+				var weight = 0;
+				var cleanList = [];
+				for(var i = 0; i < user.history.length; i++)
+				{
+					var obj = user.history[i];
+					weight = Math.pow(Math.E, (obj.timestamp - time) / 1);
+					if(weight < .001)
+					{
+						cleanList.push(obj);
+					}
+					sum += obj.lean * weight;
+					weights += weight;
+				}
+				sum /= weights;
+			
+				findArticle(network, sum, function(article) {
+					var responseMsg = "";
+					res.writeHead(200, {"Content_Type" : "text/plain"});
+					if(article != null)
+					{
+						responseMsg = article.url + "\n";
+						responseMsg += article.caption + "\n";
+						responseMsg += article.imageUrl;
+					}
+					res.end(responseMsg);
+				});
+			
+				for(var i = 0; i < cleanList.length; i++)
+				{
+					var obj = cleanList[i];
+					obj.remove();
+				}
+			});
 		});
     }).on("error", function(err) {
         console.error(err.stack);
