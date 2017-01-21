@@ -4,14 +4,15 @@ var querystring = require("querystring");
 var parser = require("rss-parser");
 var cheerio = require("cheerio");
 
-parser.parseURL('http://www.vox.com/rss/index.xml', function(err, parsed) {
-    console.log(parsed.feed.title);
-    parsed.feed.entries.forEach(function(entry) {
-        console.log(entry.title + ':' + entry.link);
-    });
-});
+var rssList = [
+    'http://www.vox.com/rss/index.xml', // vox
+    'http://rss.cnn.com/rss/cnn_topstories.rss', // cnn
+    'http://feeds.feedburner.com/motherjones/main', // motherjones
+    'http://www.huffingtonpost.com/feeds/index.xml', // huffington
+    'http://www.salon.com/feed/' // salon
+]
 
-parser.parseURL('http://rss.cnn.com/rss/cnn_topstories.rss', function(err, parsed) {
+parser.parseURL(rssList[2], function(err, parsed) {
     console.log(parsed.feed.title);
     parsed.feed.entries.forEach(function(entry) {
         console.log(entry.title + ':' + entry.link);
