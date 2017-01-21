@@ -42,7 +42,7 @@ module.exports.scrape = function(network, article, callback) {
     console.log("Scraping " + link);
 
     request(link, function(err, res, html) {
-        if (error != undefined) {
+        if (err != undefined) {
             console.error("Failed to scrape:", err.stack);
             return;
         }
