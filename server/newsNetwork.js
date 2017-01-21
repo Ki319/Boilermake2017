@@ -1,4 +1,7 @@
-
+var http = require("http");
+var request = require("request");
+var querystring = require("querystring");
+var parser = require("rss-parser");
 
 var rssList = [
     {name: "vox", domain: "www.vox.com", rss: 'http://www.vox.com/rss/index.xml', lean: -0.67, cache: []},
@@ -92,89 +95,89 @@ rssReader["vox"] = createGeneralReader(function(obj, entry) {
         image = image.substring(1, image.length - 1);
     }
     return image;
-}
+});
 
-rssReader["cnn"] = createGeneralReader(function(obj, entry) {
+rssReader["cnn"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["motherjones"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["motherjones"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["huffingtonpost"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["huffingtonpost"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["salon"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["salon"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["wnd"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["wnd"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["breitbart"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["breitbart"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["theblaze"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["theblaze"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["foxnews"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["foxnews"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["washingtontimes"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["washingtontimes"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["wsj"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["wsj"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["forbes"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["forbes"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["realclearpolitics"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["realclearpolitics"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["usatoday"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["usatoday"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["abcnews"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["abcnews"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["cbsnews"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["cbsnews"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["washingtonpost"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["washingtonpost"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["time"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["time"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["nytimes"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["nytimes"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["npr"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["npr"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["msnbc"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["msnbc"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["mediamatters"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["mediamatters"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["thenation"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["thenation"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["alternet"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["alternet"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["politico"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["politico"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["thehill"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["thehill"] = createGeneralReader(function(entry) {
     return entry.image;
-}
-rssReader["rollcall"] = createGeneralReader(function(obj, entry) {
+});
+rssReader["rollcall"] = createGeneralReader(function(entry) {
     return entry.image;
-}
+});
 
 function createGeneralReader(entryFunction) {
-    return (function(articles, cache) {
+    return function(articles, cache) {
         articles.feed.entries.forEach(function(entry) {
             var obj = {};
             obj.title = entry.title;
@@ -182,30 +185,34 @@ function createGeneralReader(entryFunction) {
             obj.image = entryFunction(entry);
             cache.push(obj);
         }, cache, entryFunction);
-    })(entryFunction);
+    };
 }
 
 function scrapeAllRss(callback) {
-    parser.parseURL(rssList[2], function(err, parsed) {
+    parser.parseURL(rssList[0].rss, function(err, parsed) {
         console.log(parsed.feed.title);
         parsed.feed.entries.forEach(function(entry) {
             console.log(entry.title + ':' + entry.link);
         });
-        callback(network, parsed.feed);
+        callback(rssList[0].name, parsed);
     });
 }
 
 function startFeedReader() {
+    scrapeAllRss(function(network, articles) {
+        var newsNetwork = getNewsNetwork(network);
+        rssReader[network](articles, newsNetwork.cache);
+    });
+    /*
     var refreshIntervalId = setInterval(function() {
         console.log('intervalSet');
-        /*
         scrapeAllRss(function(network, articles) {
             var newsNetwork = getNewsNetwork(network);
             rssReader[network](articles, newsNetwork.cache);
         });
-        */
         clearInterval(refreshIntervalId);
-    },  1000);
+    }, 1000);
+    */
 }
 
 module.exports.startFeedReader = startFeedReader;
