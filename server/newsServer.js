@@ -33,15 +33,25 @@ var rssList = [
     {name: "roll call", rss: 'http://www.rollcall.com/rss/tag/rss-feed/all-news', lean: 0, cache: []}
 ]
 
+function getNewsNetwork(network) {
+    for (var i = 0; i < rssList.length; i++) {
+        if (rssList[i].name == network) {
+            return rssList[i];
+        }
+    }
+}
+
 setInterval(function() {
-    /*
     scrapeAllRss(function(network, articles) {
+        var newNetwork = getNewsNetwork(network);
+        rssReader[network](articles);
         if (network == "vox") {
             articles.feed.entries.forEach(function(entry) {
                 console.log(entry.title);
                 console.log(entry.link);
                 var re = new RegExp("^<img.*src=\".*\" \/>");
                 var image = re.exec(entry.content);
+                re = new RegExp("^<img.*src=\".*\" \/>");
                 if(image != null) {
                     console.log(image);
                 }
@@ -54,8 +64,23 @@ setInterval(function() {
             });
         }
     });
-    */
-}, 30 * 60 * 1000);
+}, 60 * 60 * 1000);
+
+var rssReader = [];
+
+rssReader["vox"] = function(articles) {
+    var cache = [];
+    articles.feed.entries.forEach(function(entry) {
+        console.log(entry.title);
+        console.log(entry.link);
+        var re = new RegExp("^<img.*src=\".*\" \/>");
+        var image = re.exec(entry.content);
+        re = new RegExp("^<img.*src=\".*\" \/>");
+        if(image != null) {
+            console.log(image);
+        }
+    }, cache);
+}
 
 var info = {
     "title": "",
