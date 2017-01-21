@@ -17,6 +17,27 @@ http.createServer(function (req, res) {
     var body = [];
 
     console.log("Connection established.");
+	
+	mongodb.MongoClient.connect('mongodb://localhost:27016/news', function(err, db)
+	{
+		console.log("Connected to MongoDB");
+		
+		var user = null;
+		
+		mongodb.find(db, "users", {'userid' : INSERT_USERID}, function(result) {
+				user = result[0];
+		});
+		
+		if(user == null)
+		{
+			user = {userid : INSERT_USERID, history : []};
+			mongodb.insert(db, "users", user, function(result) {
+				console.log("SUCCESFULLY CREATE NEW USER");
+			});
+		}
+		
+		db.close();
+	}
 
     req.on("data", function (buff) {
         body.push(buff);
