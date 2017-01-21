@@ -94,7 +94,7 @@ function getNewsNetworksByLean(low, high) {
 
 var rssReader = [];
 
-rssReader["vox"] = createGeneralReader(function(entry) {
+function rssContentParser(entry) {
     var re = [];
     re[0] = new RegExp("<img.*src=\".*\" \/>");
     re[1] = new RegExp("src=\".*\"");
@@ -104,46 +104,81 @@ rssReader["vox"] = createGeneralReader(function(entry) {
 
     for (var i = 0; i < re.length; i++) {
         image = re[i].exec(image);
-		image = image[0];
         if (image == null) {
             return "";
         }
+        else {
+		    image = image[0];
+        }
     }
-    image = image.substring(1, image.length - 1);
+    image = image.split('\"')[1];
     return image;
+}
+
+rssReader["vox"] = createGeneralReader(rssContentParser);
+
+// TODO enclosure
+rssReader["cnn"] = createGeneralReader(function(entry) {
+    console.log(entry);
+    return entry.enclosure.link;
 });
 
-rssReader["cnn"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
+// TODO
 rssReader["motherjones"] = createGeneralReader(function(entry) {
-    return entry.image;
+    console.log(entry);
+    return null;
 });
+
+// TODO enclosure
 rssReader["huffingtonpost"] = createGeneralReader(function(entry) {
-    return entry.image;
+    console.log(entry);
+    return entry.enclosure.link;
 });
+
+// TODO
 rssReader["salon"] = createGeneralReader(function(entry) {
-    return entry.image;
+    console.log(entry);
+    return null;
 });
+
+// Some articles don't have a thumbnail
 rssReader["wnd"] = createGeneralReader(function(entry) {
-    return entry.image;
+    entry.content = entry["content:encoded"];
+    return rssContentParser(entry);
 });
+
+// TODO enclosure
 rssReader["breitbart"] = createGeneralReader(function(entry) {
-    return entry.image;
+    return entry.enclosure.link;
 });
+
+// TODO
 rssReader["theblaze"] = createGeneralReader(function(entry) {
     return entry.image;
 });
+
+// TODO
 rssReader["foxnews"] = createGeneralReader(function(entry) {
     return entry.image;
 });
+
+// TODO
 rssReader["washingtontimes"] = createGeneralReader(function(entry) {
     return entry.image;
 });
+
+// TODO <media:content url=""
 rssReader["wsj"] = createGeneralReader(function(entry) {
+    console.log(entry);
+    console.log(entry.content);
     return entry.image;
 });
+
+// TODO <media:content url=""
 rssReader["forbes"] = createGeneralReader(function(entry) {
+    console.log(entry);
+    console.log(entry.content);
+    console.log(null.all);
     return entry.image;
 });
 rssReader["realclearpolitics"] = createGeneralReader(function(entry) {
@@ -199,7 +234,6 @@ function createGeneralReader(entryFunction) {
             obj.title = entry.title;
             obj.url = entry.link;
             obj.image = entryFunction(entry);
-            console.log(entry);
             cache.push(obj);
         }, cache, entryFunction);
     };
@@ -260,7 +294,6 @@ function getCache(newsNetworkName, callback) {
           // if news network is found
           if (1 <= result.length) {
               console.log("network found");
-              console.log(result);
               var network = result[0].data;
 
               // if lastUpdate was less than 1 hour ago
