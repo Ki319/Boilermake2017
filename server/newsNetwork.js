@@ -16,7 +16,7 @@ var rssList = [
     {name: "forbes", domain: "www.forbes.com", rss: 'https://www.forbes.com/real-time/feed2/', lean: 0.33, cache: []},
     {name: "realclearpolitics", domain: "www.realclearpolitics.com", rss: 'https://feeds.feedburner.com/realclearpolitics/qlMj', lean: 0.2, cache: []},
     {name: "usatoday", domain: "www.usatoday.com", rss: 'http://rssfeeds.usatoday.com/usatoday-NewsTopStories', lean: 0, cache: []},
-    {name: "abcnews", domain: "www.abcnews.com", rss: 'http://feeds.abcnews.com/abcnews/topstories', lean: -0.13, cache: []},
+    {name: "abcnews", domain: "abcnews.go.com", rss: 'http://feeds.abcnews.com/abcnews/topstories', lean: -0.13, cache: []},
     {name: "cbsnews", domain: "www.cbsnews.com", rss: 'http://www.cbsnews.com/latest/rss/main', lean: -0.2, cache: []},
     {name: "washingtonpost", domain: "www.washingtonpost.com", rss: 'http://feeds.washingtonpost.com/rss/politics', lean: -0.27, cache: []},
     {name: "time", domain: "www.time.com", rss: 'http://time.com/feed/', lean: -0.33, cache: []},
@@ -32,31 +32,31 @@ var rssList = [
 ];
 
 /*
-vox
+vox [searchable]
 cnn
 motherjones
-huffingtonpost
-salon
-wnd
-breitbart
-theblaze
+huffingtonpost [searchable](?)
+salon [searchable](bad)
+wnd [searchable]
+breitbart [searchable]
+theblaze [searchable]
 foxnews
 washingtontimes
 wsj
 forbes
-realclearpolitics
+realclearpolitics [searchable]
 usatoday
-abcnews
+abcnews [searchable]
 cbsnews
-washingtonpost
-time
-nytimes
-npr
+washingtonpost [searchable]
+time [searchable]
+nytimes [searchable]
+npr [searchable]
 msnbc
 mediamatters
-thenation
+thenation [searchable]
 alternet
-politico
+politico [searchable]
 thehill
 rollcall
 */

@@ -33,8 +33,36 @@ http.createServer(function (req, res) {
             return;
         }
 
-        var link = url.parse(body);
+        data = body.split("\n");
+        var uuid = data[0];
+        var link = url.parse(data[1]);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
+
+        mongodb.MongoClient.connect('mongodb://localhost:27016/news', function(err, db)
+        {
+            console.log("Connected to MongoDB");
+
+            var user = null;
+
+            mongodb.find(db, "users", {'userid' : uuid}, function(result) {
+                    user = result[0];
+            });
+
+            if(user == null)
+            {
+                user = {userid : uuid, history : []};
+                mongodb.insert(db, "users", user, function(result) {
+                    console.log("SUCCESFULLY CREATE NEW USER");
+                });
+            }
+            var historyObj = {"lean": lean, "timestamp": Math.round(Date.now() / 60000)};
+            user.history.push(historyObj);
+
+            mongodb.collection()
+
+
+            db.close();
+        }
 
         console.log ("User is reading from '" + network.name + "' with political lean " + network.lean + ".");
 
@@ -42,9 +70,21 @@ http.createServer(function (req, res) {
         if (network.lean < 0) { // Shift left to right.
             minLean = network.lean + 0.2;
             maxLean = network.lean + 0.5;
+            if (minLean > 0) {
+                minLean = network.lean + 0.001;
+                maxLean = 0;
+            } else if (maxLean > 0) {
+                maxLean = 0;
+            }
         } else if (network.lean > 0) { // Shift right to left.
             minLean = network.lean - 0.2;
             maxLean = network.lean - 0.5;
+            if (minLean < 0) {
+                minLean = network.lean - 0.001;
+                maxLean = 0;
+            } else if (maxLean < 0) {
+                maxLean = 0;
+            }
         } else {
             console.log("Network '" + network.name + "' has no lean, returning null.");
             res.writeHead(200, {"Content-Type": "text/plain"});
