@@ -126,18 +126,18 @@ http.createServer(function (req, res) {
 				}
 				sum /= weights;
 
-                findNewNetwork(network, sum, function(net) {
-                    scraper.scrape(network, title, function(scrapeData) {
+                findNewNetwork(network, sum, function(newNet) {
+                    scraper.scrape(newNet, title, function(scrapeData) {
                         var responseMsg = "";
                         if (!scrapeData) {
                             console.log("Resorting to RSS.");
-                            newsNetwork.getCache(network.name, function(arr) {
+                            newsNetwork.getCache(newNet.name, function(arr) {
                                 article = arr[randomInt(0, arr.length - 1)];
                                 console.log(article);
                                 if (article != null) {
                                     responseMsg = article.url + "\n";
             						responseMsg += article.title + "\n";
-                                    responseMsg += network.realname + "\n";
+                                    responseMsg += newNet.realname + "\n";
             						responseMsg += article.image;
                                 }
 
@@ -148,7 +148,7 @@ http.createServer(function (req, res) {
                         } else {
                             responseMsg = scrapeData.url + "\n";
                             responseMsg += scrapeData.title + "\n";
-                            responseMsg += network.realname + "\n";
+                            responseMsg += newNet.realname + "\n";
                             responseMsg += scrapeData.img;
 
                             console.log("POST data:", responseMsg);

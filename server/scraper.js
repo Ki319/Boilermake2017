@@ -84,6 +84,11 @@ module.scrapeNetwork = {
     },
     "washingtonpost": function($, baseLink) {
         // ...
+    },
+    "npr": function($, baseLink) {
+        var link = $("h1.title").first().children().first().attr("href");
+        var title = $("h1.title").first().children().first().text();
+        //var img = $("article.item").first().children()
     }
 
 };

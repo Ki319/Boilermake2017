@@ -327,7 +327,13 @@ function createGeneralReader(arr) {
         cur = arr[2];
         obj.image = post;
         for (var i = 0; i < cur.length; i++) {
-            obj.image = obj.image[cur[i]];
+            if (obj.image != undefined) {
+                obj.image = obj.image[cur[i]];
+            }
+            else {
+                obj.image = '';
+                break;
+            }
         }
 
         //console.log(obj);
