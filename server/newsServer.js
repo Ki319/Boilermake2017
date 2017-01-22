@@ -131,7 +131,7 @@ http.createServer(function (req, res) {
                         var responseMsg = "";
                         if (!scrapeData) {
                             console.log("Resorting to RSS.");
-                            article = newNetwork.cache[randomInt(0, newNetwork.cache.length - 1)];
+                            article = network.cache[randomInt(0, network.cache.length - 1)];
                             if (article != null) {
                                 responseMsg = article.url + "\n";
         						responseMsg += article.caption + "\n";
