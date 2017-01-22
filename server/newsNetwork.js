@@ -243,53 +243,53 @@ rssReader["washingtonpost"] = createGeneralReader([
     []
 ]);
 rssReader["time"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["nytimes"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["npr"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["msnbc"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["mediamatters"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["thenation"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["alternet"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["politico"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["thehill"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["rollcall"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 
