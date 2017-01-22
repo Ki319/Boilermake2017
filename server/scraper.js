@@ -163,7 +163,8 @@ module.exports.scrape = function(network, article, callback) {
         return;
     }
 
-    var query = querystring.stringify({query: "article"}).split("%20").join("+");
+    var query = querystring.stringify({a: article}).split("%20").join("+");
+    query = query.substring(2);
     var link = module.networkSource[network.name] + query;
     console.log("Scraping " + link);
 
