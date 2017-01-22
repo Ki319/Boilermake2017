@@ -514,8 +514,8 @@ function createPostReadingFunc(newsNetwork) {
         if (matasd.exec(obj.url)) {
             obj.url = str.slice(0, 5) + str.slice(6, str.length);
         }
-        if (obj.isEmpty()) {
-            obj = newsNetwork.defaultImg;
+        if (obj.image.length == 0) {
+            obj.image = newsNetwork.defaultImg;
         }
         return obj;
     }
