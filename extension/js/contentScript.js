@@ -6,13 +6,27 @@ var newsSites = ["cnn.com", "vox.com", "motherjones.com", "huffingtonpost.com",
 		"thenation.com", "alternet.org", "politico.com", "thehill.com", "rollcall.com",
 		"drudgereport.com"];
 		
-var newsTitles = [
-	{}
-];
-		
 var newsData = [
-	{titleSign : "CNN", endSign : " - CNN", topShift : 50, toTopShift : 50, shiftWait : 150, leftShift : 20}, //cnn
-	{topShift : 50, toTopShift : 0, shiftWait : 250} //vox
+	{titleSign : "CNN", endSign : " - CNN", topShift : 125, toTopShift : 50, shiftWait : 90, leftShift : 20, z : 0}, //cnn
+	{titleSign : "Vox.com", endSign : " - Vox", topShift : 140, toTopShift : 60, shiftWait : 300, leftShift : 20, z : 0}, //vox
+	{titleSign : "Mother Jones", endSign : " | Mother Jones", topShift : 50, toTopShift : 50, shiftWait : 1000, leftShift : 20, z : 0}, //mother jones
+	{titleSign : "The Huffington Post", endSign : " | The Huffington Post", topShift : 125, toTopShift : 60, shiftWait : 400, leftShift : 20, z : 0}, //huffingtonpost
+	{titleSign : "Salon:", endSign : " - Salon.com", topShift : 70, toTopShift : 70, shiftWait : 1000, leftShift : 20, z : 0}, //salon
+	{titleSign : "WND - ", endSign : "", topShift : 300, toTopShift : 0, shiftWait : 200, leftShift : 20, z : 0}, // wnd
+	{titleSign : "Breitbart News Network", endSign : "", topShift : 230, toTopShift : 0, shiftWait : 1300, leftShift : 20, z : 0}, //breitbart
+	{titleSign : "TheBlaze", endSign : " - TheBlaze", topShift : 50, toTopShift : 50, shiftWait : 1000, leftShift : 20, z : 1000}, //theblaze
+	{titleSign : "Fox News - ", endSign : " | Fox News", topShift : 150, toTopShift : 0, shiftWait : 500, leftShift : 20, z : 0}, //foxnews
+	{titleSign : "Washington Times - ", endSign : " - Washington Times", topShift : 130, toTopShift : 130, shiftWait : 600, leftShift : 20, z : 1000}, //washington times
+	{titleSign : "The Wall Street Journal", endSign : " - WSJ", topShift : 300, toTopShift : 80, shiftWait : 500, leftShift : 20, z : 3}, // wallstreet journal
+	{titleSign : "Forbes", endSign : "", topShift : 500, toTopShift : 0, shiftWait : 100, leftShift : 20, z : 10000}, //forbes
+	{titleSign : "RealClearPolitics - ", endSign : " | RealClearPolitics", topShift : 10},
+	{titleSign : "USA TODAY:", endSign : "", topShift : 120, toTopShift : 50, shiftWait : 300, leftShift : 20, z : 5000},
+	{titleSign : "ABC News:", endSign : " - ABC News", topShift : 50, toTopShift : 50, shiftWait : 600, leftShift : 20, z : 1000038},
+	{titleSign : "ASJ", endSign : " - CBS News", topShift : 100, toTopShift : 0, shiftWait : 400, leftShift : 10, z : 2147000000},
+	{},
+	{},
+	{},
+	{}
 ];
 
 var news;
@@ -65,7 +79,6 @@ function resizeCanvas()
 	{
 		context.globalAlpha = 1;
 		clearInterval(interval);
-		alert('done')
 	}
 	
 	drawCanvas();
@@ -133,25 +146,27 @@ function drawCanvas()
 			text += words[i] + " ";
 		}
 	}
-	context.fillText(text, canvas.width / 2, canvas.height * (currentLine ? 5 : 4.2) / 5);
-	context.strokeText(text, canvas.width / 2, canvas.height * (currentLine ? 5 : 4.2) / 5);
+	context.fillText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5);
+	context.strokeText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5);
 	
 	context.restore();
 }
 
 function scrollCanvas(e)
 {
+	canvas.style.opacity = "1";
 	if(news.topShift - window.scrollY / 2 >= news.toTopShift)
 	{
 		canvas.style.top = (news.topShift - window.scrollY / 2) + "px";
 	}
-	else if(news.topShift - window.scrollY / 2 >= -(news.shiftWait))
+	else if(window.scrollY - news.topShift * 2 <= news.shiftWait)
 	{
 		canvas.style.top = news.toTopShift + "px";
 	}
 	else
 	{
-		canvas.style.top = (news.toTopShift - (window.scrollY - 2 * (news.shiftWait + news.toTopShift))) + "px";
+		canvas.style.top = (news.toTopShift - (window.scrollY - news.shiftWait - 2 * news.topShift)) + "px";
+		canvas.style.opacity = "" + ((150 + (news.toTopShift - (window.scrollY - news.shiftWait - 2 * news.topShift))) / (150 + news.topShift));
 	}
 }
 
@@ -172,25 +187,25 @@ function dblClickArticle(e)
 
 function process(http)
 {
-	if(http.responseText.length == 0)
-		return;
+	//if(http.responseText.length == 0)
+		//return;
 	
-	var parsed = http.responseText.split("\n");
+	//var parsed = http.responseText.split("\n");
 	
 	img = new Image;
 	
-	img.src = parsed[0];
-	articleLink = parsed[1];
-	caption = parsed[2];
+	img.src = "http://pngimg.com/upload/lion_PNG3805.png";//parsed[3];
+	articleLink = "http://pngimg.com/upload/lion_PNG3805.png";//parsed[0];
+	caption = "Killed in a school by a zoo";//parsed[1];
 	
 	canvas = document.createElement('canvas');
 	canvas.id = "a9d9d9djgdj";
 	canvas.width = 200;
 	canvas.height = 150;
-	canvas.style.zIndex   = 0;
+	canvas.style.zIndex   = newsData[index].z;
 	canvas.style.position = "fixed";
 	canvas.style.left = (window.innerWidth - news.leftShift - canvas.width) + "px";
-	canvas.style.top = news.topShift + "px";
+	scrollCanvas(null);
 	canvas.style.cursor = 'pointer';
 	canvas.addEventListener('click', clickArticle, false);
 	canvas.addEventListener('dblclick', dblClickArticle, false);
@@ -205,25 +220,39 @@ function process(http)
 	$(window).scroll(scrollCanvas);
 }
 
-$(document).ready(function(e)
+function startup()
 {
 	var site = location.hostname;
 	if(site.indexOf(".") < 5)
 		site = site.substring(site.indexOf(".") + 1);
 	index = newsSites.indexOf(site);
-	if(index > -1)
+	if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !document.title.startsWith("("))
 	{
 		news = newsData[index];
 		var userid;
-		chrome.storage.sync.get('userid', function(items) {
+		chrome.storage.sync.get('userid', function(items) 
+		{
 			userid = items.userid;
-			if (userid) {
-				useToken(userid);
-			} else {
+			if (!userid)
+			{
 				userid = getRandomToken();
 				chrome.storage.sync.set({userid: userid});
 			}
 		});
-		httpRequest("http://home.maxocull.tech:9090/", userid + "\n" + location.url, "POST", process);
+		process("")
+		//httpRequest("http://home.maxocull.tech:9090/", userid + "\n" + location.url, "POST", process);
+	}
+}
+
+if(location.hostname === "www.cbsnews.com")
+{
+	startup();
+}
+
+$(window).bind("load", function()
+{
+	if(!(location.hostname === "www.cbsnews.com"))
+	{
+		startup();
 	}
 });
