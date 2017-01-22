@@ -16,10 +16,6 @@ var alchemy_language = new AlchemyLanguageV1({
 
 var params = 'IBM Watson won the Jeopardy television show hosted by Alex Trebek';
 
-findKeywords(asldkjf, function(keywordsAsString) {
-  console.log(keywordsAsString);
-});
-
 /*
 alchemy_language.keywords(params, function (err, response) {
   if (err) {
