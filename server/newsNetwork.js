@@ -107,9 +107,9 @@ var rssReader = [];
 function rssContentParser2(content) {
 
     var re = [];
-    re[0] = new RegExp("<[iI]mg(.*?)src=\'(.*?)([^/]\')(.*?)>");
-    re[1] = new RegExp("src=\".*\"");
-    re[2] = new RegExp("\".*\"");
+    re[0] = new RegExp("<[iI]mg(.*?)src=\'(.*?)([^/]\')(.*?)/>");
+    re[1] = new RegExp("src=\'.*\'");
+    re[2] = new RegExp("\'.*\'");
 
     var image = content;
 
@@ -122,7 +122,7 @@ function rssContentParser2(content) {
 		    image = image[0];
         }
     }
-    image = image.split('\"')[1];
+    image = image.split('\'')[1];
     if (image == undefined || image == null) {
         image = '';
     }
@@ -182,28 +182,30 @@ rssReader["motherjones"] = createGeneralReader([
     ['meta', 'image', 'url']
 ]);
 
+// works very small image, sometimes no image
 rssReader["huffingtonpost"] = createGeneralReader([
     ['title'],
     ['link'],
     ['enclosures', 0, 'url']
 ]);
 
+// works
 rssReader["salon"] = function(post) {
     var obj = createGeneralReader([
       ['title'],
       ['link'],
       ['description']
-    ])(post);
+  ])(post);
 
     obj.image = rssContentParser(obj.image);
-    // console.log(obj);
+    console.log(obj);
 
     // process.exit();
 
     return obj;
 }
 
-// TODO web scrape website
+// works no image
 rssReader["washingtontimes"] = function(post) {
     var obj = createGeneralReader([
         ['title'],
@@ -216,19 +218,21 @@ rssReader["washingtontimes"] = function(post) {
     return obj;
 }
 
+// works
 rssReader["wsj"] = createGeneralReader([
     ['title'],
     ['link'],
     ['enclosures', 0, 'url']
 ]);
 
+// works
 rssReader["forbes"] = createGeneralReader([
     ['title'],
     ['link'],
     ['enclosures', 0, 'url']
 ]);
 
-// TODO webs scrape website
+// works no image
 rssReader["realclearpolitics"] = function(post) {
     var obj = createGeneralReader([
         ['title'],
@@ -241,7 +245,7 @@ rssReader["realclearpolitics"] = function(post) {
     return obj
 }
 
-// TODO webs scrape website
+// works no image
 rssReader["usatoday"] = function(post) {
     var obj = createGeneralReader([
         ['title'],
@@ -254,60 +258,85 @@ rssReader["usatoday"] = function(post) {
     return obj
 }
 
+// works small image, but still good size
 rssReader["abcnews"] = createGeneralReader([
     ['title'],
-    ['url'],
+    ['link'],
     ['image', 'url']
 ]);
 
+// works, extremely small image
 rssReader["cbsnews"] = createGeneralReader([
     ['title'],
     ['link'],
     ['rss:image', '#']
 ]);
+
+// works
 rssReader["washingtonpost"] = createGeneralReader([
     ['title'],
     ['link'],
     ['image', 'url']
 ]);
+
+// works
 rssReader["time"] = createGeneralReader([
     ['title'],
     ['link'],
     ['image', 'url']
 ]);
+
+// works, small image, would rather bigger
 rssReader["nytimes"] = createGeneralReader([
     ['title'],
     ['link'],
     ['media:content', '@', 'url']
 ]);
+
+// works
 rssReader["npr"] = function(node) {
     var obj = createGeneralReader([
         ['title'],
         ['link'],
         ['description']
     ])(node);
-    console.log(obj);
-    obj.image = rssContentParser(obj.image);
-    console.log(obj);
-    process.exit();
+    obj.image = rssContentParser2(obj.image);
     return obj;
 }
 
+// works small image, but good size
 rssReader["msnbc"] = createGeneralReader([
     ['title'],
     ['link'],
     ['image', 'url']
 ]);
-rssReader["mediamatters"] = createGeneralReader([
-    ['title'],
-    ['link'],
-    []
-]);
-rssReader["thenation"] = createGeneralReader([
-    ['title'],
-    ['link'],
-    []
-]);
+
+// works very rare images
+rssReader["mediamatters"] = function(arg) {
+    var obj = createGeneralReader([
+        ['title'],
+        ['link'],
+        ['description']
+    ])(arg);
+
+    obj.image = rssContentParser(obj.image);
+
+    return obj;
+}
+
+// small
+rssReader["thenation"] = function(arg) {
+    var obj = createGeneralReader([
+        ['title'],
+        ['link'],
+        ['description']
+    ])(arg);
+
+    obj.image = rssContentParser(obj.image);
+
+    return obj;
+}
+
 rssReader["alternet"] = createGeneralReader([
     ['title'],
     ['link'],
@@ -342,12 +371,15 @@ rssReader["foxnews"] = function(post) {
     return obj;
 }
 
-function createGeneralReader(arr) {
+function createGeneralReader(arr, flag) {
+    if (flag == undefined) {
+        flag = true;
+    }
     return function(post) {
         var obj = {};
         var cur;
 
-        // console.log(post);
+        console.log(post);
 
         cur = arr[0];
         obj.title = post;
@@ -369,7 +401,7 @@ function createGeneralReader(arr) {
                 break;
             }
         }
-        if (typeof obj.image != 'string') {
+        if (flag && typeof obj.image != 'string') {
             obj.image = '';
         }
 
