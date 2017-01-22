@@ -136,7 +136,8 @@ http.createServer(function (req, res) {
                                     responseMsg = article.url + "\n";
             						responseMsg += article.title + "\n";
                                     responseMsg += newNet.realname + "\n";
-                                    if (article.img != null && article.img != undefined && article.img != "undefined") {
+                                    console.log("RSS img:", article.image);
+                                    if (article.image != null && article.image != undefined && article.image != "undefined") {
             						    responseMsg += article.image;
                                     } else {
                                         responseMsg += newNet.defImg;
@@ -151,6 +152,7 @@ http.createServer(function (req, res) {
                             responseMsg = scrapeData.url + "\n";
                             responseMsg += scrapeData.title + "\n";
                             responseMsg += newNet.realname + "\n";
+                            console.log("Scrape img:", scrapeData.img);
                             if (scrapeData.img != null && scrapeData.img != undefined) {
                                 responseMsg += scrapeData.img;
                             } else {
