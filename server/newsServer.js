@@ -140,7 +140,7 @@ http.createServer(function (req, res) {
                                     esponseMsg += network.realname + "\n";
             						responseMsg += article.image;
                                 }
-                                r
+                                
                                 console.log("POST data:", responseMsg);
                                 res.writeHead(200, {"Content_Type" : "text/plain"});
                                 res.end(responseMsg);
