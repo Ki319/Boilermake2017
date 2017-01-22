@@ -69,8 +69,8 @@ function getUser(uuid, lean, callback)
 function findNewNetwork(network, lean, callback) {
     var newLean = lean - (lean / Math.abs(lean)) * (randomInt(30, 100)) / 400;
     console.log("lean " + lean);
-    newsNetwork.getNewsNetworkByLean(newLean, function(newNetwork) {
-        callback(newNetwork);
+    newsNetwork.getNewsNetworksByLean(network, newLean, function(newNetworks) {
+        callback(newNetworks[randomInt(0, newNetworks.length - 1)]);
     });
 }
 
@@ -97,7 +97,7 @@ http.createServer(function (req, res) {
         var title = data[2];
         console.log("Connection from user: " + uuid);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
-        console.log(body, uuid, link, title, network);
+        //console.log(body, uuid, link, title, network);
         if (network == undefined) {
             console.error("Network could not be determined from '" + link + "'.");
         }

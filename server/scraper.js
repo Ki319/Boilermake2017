@@ -136,7 +136,7 @@ module.scrapeNetwork = {
     },
     "politico": function($, baseLink) {
         var link = $("div.summary").first().children().children().children().attr("href");
-        var title = $("div.summary").first().children().children().children().text();
+        var title = $("div.summary").first().children().children().children().first().text();
         var img = $("div.fig-graphic").first().children().children().first().attr("src");
 
         if (!title || !link) {

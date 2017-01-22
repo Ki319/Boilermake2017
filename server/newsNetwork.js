@@ -107,18 +107,43 @@ function getNewsNetworkByDomain(domain) {
     }
 }
 
-function getNewsNetworkByLean(targetLean, callback) {
+function getNewsNetworkByLean(currNetwork, targetLean, callback) {
     var bestNet = rssList[0];
-    for (var i = 1; i < rssList.length; i++) {
-        if (Math.abs(rssList[i].lean - targetLean) < Math.abs(bestNet.lean - targetLean)) {
+    var i = 1;
+    if (bestNet == currNetwork) {
+        bestNet = rssList[1];
+        i = 2;
+    }
+    console.log("Target lean:", targetLean);
+    for (i; i < rssList.length; i++) {
+        if (Math.abs(rssList[i].lean - targetLean) < Math.abs(bestNet.lean - targetLean)
+                && Math.abs(currNetwork.lean) - .01 >= Math.abs(rssList[i].lean)) {
             bestNet = rssList[i];
         }
     }
     callback(bestNet);
 }
 
-function getNewsNetworksByLean(low, high, callback) {
-    if (high < low) {
+// Store in array
+function getNewsNetworksByLean(currNetwork, targetLean, callback) {
+    var bestList = [];
+    var bestList = [rssList[0]];
+    var i = 1;
+    if (bestList[0] == currNetwork) {
+        bestList = [rssList[1]];
+        i = 2;
+    }
+    console.log("Target lean:", targetLean);
+    for (i; i < rssList.length; i++) {
+        if (Math.abs(rssList[i].lean - targetLean) < Math.abs(bestList[0].lean - targetLean)
+                && Math.abs(currNetwork.lean) - .01 >= Math.abs(rssList[i].lean)) {
+            bestList = [rssList[i]];
+        } else if (rssList[i].lean == bestList[0].lean && rssList[i] != currNetwork) {
+            bestList[bestList.length] = rssList[i];
+        }
+    }
+    callback(bestList);
+    /*if (high < low) {
         var temp = high;
         high = low;
         low = temp;
@@ -129,7 +154,7 @@ function getNewsNetworksByLean(low, high, callback) {
             results.push(rssList[i]);
         }
     }
-    callback(results);
+    callback(results);*/
 }
 
 var rssReader = [];
@@ -228,7 +253,7 @@ rssReader["salon"] = function(post) {
   ])(post);
 
     obj.image = rssContentParser(obj.image);
-    console.log(obj);
+    //console.log(obj);
 
     // process.exit();
 
@@ -397,7 +422,7 @@ rssReader["rollcall"] = createGeneralReader([
 
 // works, no image
 rssReader["foxnews"] = function(post) {
-    console.log(post);
+    //console.log(post);
     var obj = createGeneralReader([
       ['title'],
       ['link'],
@@ -448,10 +473,10 @@ function createGeneralReader(arr, flag) {
 
 function scrapeAllRss(callback) {
     parser.parseURL(rssList[0].rss, function(err, parsed) {
-        console.log(parsed.feed.title);
-        parsed.feed.entries.forEach(function(entry) {
-            console.log(entry.title + ':' + entry.link);
-        });
+        //console.log(parsed.feed.title);
+        //parsed.feed.entries.forEach(function(entry) {
+        //    console.log(entry.title + ':' + entry.link);
+        //});
         callback(rssList[0].name, parsed);
     });
 }
