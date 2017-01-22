@@ -347,7 +347,7 @@ function createGeneralReader(arr) {
         var obj = {};
         var cur;
 
-        //console.log(post);
+        // console.log(post);
 
         cur = arr[0];
         obj.title = post;
