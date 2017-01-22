@@ -15,11 +15,17 @@ function randomInt(min, max) { // [min, max] not [min, max)
       return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function addHistory(user, lean)
+function addHistory(db, user, lean)
 {
 	var historyObj = {"lean": lean, "timestamp": Math.round(Date.now() / 60000)};
-	user.history.push(historyObj);
-	user.history.insert(historyObj)
+
+    console.log(user);
+    console.log(user.history);
+
+    var set = {$push : {"history": historyObj} };
+    mongodb.update(db, "users", {"userid": user.userid}, set, function(result) {
+        console.log(result);
+    });
 }
 
 function getUser(uuid, lean, callback)
@@ -27,29 +33,30 @@ function getUser(uuid, lean, callback)
 	var user = null;
 	mongodb.MongoClient.connect('mongodb://localhost:27017/news', function(err, db)
 	{
-        console.log();
-        console.log(db);
-        console.log(err);
-
+        if (err) {
+            console.log(err);
+        }
 
 		console.log("Connected to MongoDB");
-
+        console.log(db.collection("users"));
         mongodb.find(db, "users", {'userid' : uuid}, function(result) {
 			if(result.length == 0)
 			{
                 mongodb.insert(db, "users", {'userid' : uuid, history: []}, function(result) {
 				//db.users.insert({"userid" : uuid, "history" : []}, function(result) {
+                    console.log(result);
+
 					console.log("SUCCESFULLY CREATE NEW USER");
-					user = result[0];
-					addHistory(user, lean);
-					db.close();
-					callback(user);
+                    user = result.ops[0];
+                    addHistory(db, user, lean);
+                    db.close();
+                    callback(user);
 				});
 			}
 			else
 			{
 				user = result[0];
-				addHistory(user, lean);
+				addHistory(db, user, lean);
 				db.close();
 				callback(user);
 			}
