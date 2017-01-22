@@ -18,6 +18,10 @@ var params = {
   text: 'IBM Watson won the Jeopardy television show hosted by Alex Trebek'
 };
 
+findKeywords(params, function(keywordsAsString) {
+  console.log(keywordsAsString);
+});
+
 /*
 alchemy_language.keywords(params, function (err, response) {
   if (err) {
@@ -44,14 +48,14 @@ function findKeywords(initialString, callback) {
     text: initialString
   };
 
-  alchemy_language.sentiment(params, function (err, response) {
+  alchemy_language.keywords(params, function (err, response) {
     if (err) {
       console.log('error:', err);
       callback(initialString);
     }
     else {
       var array = response.keywords;
-      if (array.length > 0) {
+      if (array.length <= 0) {
         callback(initialString)
       }
       else {
