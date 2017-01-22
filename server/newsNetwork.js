@@ -297,7 +297,7 @@ rssReader["foxnews"] = function(post) {
     var obj = createGeneralReader([
       ['title'],
       ['link'],
-      []
+      [0]
     ])(post);
 
     obj.image = '';
