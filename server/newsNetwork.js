@@ -237,12 +237,18 @@ rssReader["motherjones"] = createGeneralReader([
     ['meta', 'image', 'url']
 ]);
 
-// works very small image, sometimes no image
-rssReader["theblaze"] = createGeneralReader([
-    ['title'],
-    ['link'],
-    ['enclosures', 0, 'url']
-]);
+// idk
+rssReader["theblaze"] = function functionName(node) {
+    var obj = createGeneralReader([
+        ['title'],
+        ['link'],
+        []
+    ])(node);
+
+    obj.link = 'http://www.theblaze.com/' + obj.link;
+
+    return obj;
+}
 
 // works very small image, sometimes no image
 rssReader["huffingtonpost"] = createGeneralReader([
