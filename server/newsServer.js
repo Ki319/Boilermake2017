@@ -131,21 +131,28 @@ http.createServer(function (req, res) {
                         var responseMsg = "";
                         if (!scrapeData) {
                             console.log("Resorting to RSS.");
-                            article = network.cache[randomInt(0, network.cache.length - 1)];
-                            if (article != null) {
-                                responseMsg = article.url + "\n";
-        						responseMsg += article.caption + "\n";
-        						responseMsg += article.imageUrl;
-                            }
+                            newsNetwork.getCache(network.name, function(arr) {
+                                article = arr[randomInt(0, arr.length - 1)];
+                                console.log(article);
+                                if (article != null) {
+                                    responseMsg = article.url + "\n";
+            						responseMsg += article.title + "\n";
+            						responseMsg += article.image;
+                                }
+                                responseMsg += network.realname;
+                                console.log("POST data:", responseMsg);
+                                res.writeHead(200, {"Content_Type" : "text/plain"});
+                                res.end(responseMsg);
+                            });
                         } else {
                             responseMsg = scrapeData.url + "\n";
                             responseMsg += scrapeData.title + "\n";
                             responseMsg += scrapeData.img + "\n";
+                            responseMsg += network.realname;
+                            console.log("POST data:", responseMsg);
+                            res.writeHead(200, {"Content_Type" : "text/plain"});
+                            res.end(responseMsg);
                         }
-                        responseMsg += network.realname;
-                        console.log("POST data:", responseMsg);
-                        res.writeHead(200, {"Content_Type" : "text/plain"});
-                        res.end(responseMsg);
                     });
                 });
 			});
