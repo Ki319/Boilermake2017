@@ -15,11 +15,17 @@ function randomInt(min, max) { // [min, max] not [min, max)
       return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function addHistory(user, lean)
+function addHistory(db, user, lean)
 {
 	var historyObj = {"lean": lean, "timestamp": Math.round(Date.now() / 60000)};
-	user.history.push(historyObj);
-	user.history.insert(historyObj)
+
+    //console.log(user);
+    //console.log(user.history);
+
+    var set = {$push : {"history": historyObj} };
+    mongodb.update(db, "users", {"userid": user.userid}, set, function(result) {
+        //console.log(result);
+    });
 }
 
 function getUser(uuid, lean, callback)
@@ -27,29 +33,30 @@ function getUser(uuid, lean, callback)
 	var user = null;
 	mongodb.MongoClient.connect('mongodb://localhost:27017/news', function(err, db)
 	{
-        console.log();
-        console.log(db);
-        console.log(err);
-
+        if (err) {
+            console.log(err);
+        }
 
 		console.log("Connected to MongoDB");
-
+        //console.log(db.collection("users"));
         mongodb.find(db, "users", {'userid' : uuid}, function(result) {
 			if(result.length == 0)
 			{
                 mongodb.insert(db, "users", {'userid' : uuid, history: []}, function(result) {
 				//db.users.insert({"userid" : uuid, "history" : []}, function(result) {
-					console.log("SUCCESFULLY CREATE NEW USER");
-					user = result[0];
-					addHistory(user, lean);
-					db.close();
-					callback(user);
+                    //console.log(result);
+
+					console.log("Successfully created a new user.");
+                    user = result.ops[0];
+                    addHistory(db, user, lean);
+                    db.close();
+                    callback(user);
 				});
 			}
 			else
 			{
 				user = result[0];
-				addHistory(user, lean);
+				addHistory(db, user, lean);
 				db.close();
 				callback(user);
 			}
@@ -58,12 +65,17 @@ function getUser(uuid, lean, callback)
 	});
 }
 
-function findArticle(network, lean, callback)
-{
-	var newLean = lean - (lean / Math.abs(lean)) * (randomInt(30, 100)) / 400;
-	newsNetwork.getNewsNetworkByLean(network, lean, newLean, function(newNetwork) {
-		callback(newNetwork.cache[randomInt(0, newNetwork.cache.length - 1)]);
+/*function findArticle(network, lean, callback) {
+	findNewNetwork(network, lean, function(newNetwork) {
+        callback(newNetwork.cache[randomInt(0, newNetwork.cache.length - 1)]);
 	});
+}*/
+
+function findNewNetwork(network, lean, callback) {
+    var newLean = lean - (lean / Math.abs(lean)) * (randomInt(30, 100)) / 400;
+    newsNetwork.getNewsNetworkByLean(newLean, function(newNetwork) {
+        callback(newNetwork);
+    });
 }
 
 http.createServer(function (req, res) {
@@ -87,9 +99,13 @@ http.createServer(function (req, res) {
         var uuid = data[0];
         var link = url.parse(data[1]);
         var title = data[2];
+        //console.log(body, uuid, link, title);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
+        if (network == undefined) {
+            console.error("Network could not be determined.");
+        }
 
-		scraper.scrape(network, title, function(scrapeData) {
+		//scraper.scrape(network, title, function(scrapeData) {
 			getUser(uuid, network.lean, function(user) {
 				var time = Math.round(Date.now() / 60000);
 				var sum = 0;
@@ -109,34 +125,27 @@ http.createServer(function (req, res) {
 				}
 				sum /= weights;
 
-                if (!scrapeData) {
-    				findArticle(network, sum, function(article) {
-    					var responseMsg = "";
-    					res.writeHead(200, {"Content_Type" : "text/plain"});
-    					if(article != null)
-    					{
-    						responseMsg = article.url + "\n";
-    						responseMsg += article.caption + "\n";
-    						responseMsg += article.imageUrl;
-    					}
-    					res.end(responseMsg);
-    				});
-                } else {
-                    var responseMsg = "";
-                    res.writeHead(200, {"Content_Type" : "text/plain"});
-                    responseMsg = scrapeData.url + "\n";
-                    responseMsg += scrapeData.title + "\n";
-                    responseMsg += scrapeData.img;
-                    res.end(responseMsg);
-                }
-
-				for(var i = 0; i < cleanList.length; i++)
-				{
-					var obj = cleanList[i];
-					obj.remove();
-				}
+                findNewNetwork(network, sum, function(net) {
+                    scraper.scrape(network, title, function(scrapeData) {
+                        var responseMsg = "";
+                        if (!scrapeData) {
+                            article = newNetwork.cache[randomInt(0, newNetwork.cache.length - 1)];
+                            if (article != null) {
+                                responseMsg = article.url + "\n";
+        						responseMsg += article.caption + "\n";
+        						responseMsg += article.imageUrl;
+                            }
+                        } else {
+                            responseMsg = scrapeData.url + "\n";
+                            responseMsg += scrapeData.title + "\n";
+                            responseMsg += scrapeData.img;
+                        }
+                        res.writeHead(200, {"Content_Type" : "text/plain"});
+                        res.end(responseMsg);
+                    });
+                });
 			});
-		});
+		//});
     }).on("error", function(err) {
         console.error(err.stack);
     });

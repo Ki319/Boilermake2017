@@ -18,7 +18,8 @@
   "permissions": [
     "tabs",
     "bookmarks",
-	"http://*/*",
+	"<all_urls>",
+	"activeTab",
 	"debugger",
 	"http://10.186.148.35:9090/",
 	"storage"

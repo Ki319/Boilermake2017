@@ -8,7 +8,7 @@ var rssList = [
     {name: "huffingtonpost", domain: "www.huffingtonpost.com", rss: 'http://www.huffingtonpost.com/feeds/index.xml', lean: -0.8, cache: [], searchable: true},
     {name: "salon", domain: "www.salon.com", rss: 'http://www.salon.com/feed/', lean: -0.73, cache: [], searchable: false},
     {name: "wnd", domain: "www.wnd.com", rss: 'http://www.wnd.com/feed/', lean: 1.0, cache: [], searchable: true},
-    {name: "breitbart", domain: "www.breitbart.com", rss: 'https://feeds.feedburner.com/breitbart', lean: 0.93, cache: [], searchable: true},
+    {name: "breitbart", domain: "www.breitbart.com", rss: 'https://feeds.feedburner.com/breitbart', lean: 0.93, cache: [], searchable: false},
     {name: "theblaze", domain: "www.theblaze.com", rss: 'http://www.theblaze.com/rss', lean: 0.8, cache: [], searchable: true},
     {name: "foxnews", domain: "www.foxnews.com", rss: 'http://feeds.foxnews.com/foxnews/latest', lean: 0.53, cache: [], searchable: false},
     {name: "washingtontimes", domain: "www.washingtontimes.com", rss: 'http://www.washingtontimes.com/rss/headlines/news/', lean: 0.47, cache: [], searchable: false},
@@ -77,7 +77,17 @@ function getNewsNetworkByDomain(domain) {
     }
 }
 
-function getNewsNetworksByLean(low, high) {
+function getNewsNetworkByLean(targetLean, callback) {
+    var bestNet = rssList[0];
+    for (var i = 1; i < rssList.length; i++) {
+        if (Math.abs(rssList[i].lean - targetLean) < Math.abs(bestNet.lean - targetLean)) {
+            bestNet = rssList[i];
+        }
+    }
+    callback(bestNet);
+}
+
+function getNewsNetworksByLean(low, high, callback) {
     if (high < low) {
         var temp = high;
         high = low;
@@ -89,7 +99,7 @@ function getNewsNetworksByLean(low, high) {
             results.push(rssList[i]);
         }
     }
-    return results;
+    callback(results);
 }
 
 var rssReader = [];
@@ -386,6 +396,7 @@ function getCacheFromRss(newsNetworkName, callback) {
 }
 
 module.exports.getNewsNetwork = getNewsNetwork;
+module.exports.getNewsNetworkByLean = getNewsNetworkByLean;
 module.exports.getNewsNetworksByLean = getNewsNetworksByLean;
 module.exports.getNewsNetworkByDomain = getNewsNetworkByDomain;
 
