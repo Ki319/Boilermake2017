@@ -476,6 +476,21 @@ function getCache(newsNetworkName, callback) {
     // return cache
 }
 
+var matasd = new RegExp("^https");
+
+function createPostReadingFunc(newsNetwork) {
+    return function functionName(post) {
+        var obj = rssReader[newsNetwork.name](post);
+        if (matasd.exec(obj.url)) {
+            obj.url = str.slice(0, 5) + str.slice(6, str.length))
+        }
+        if (obj.isEmpty()) {
+            obj = newsNetwork.defaultImg;
+        }
+        return obj;
+    }
+}
+
 function getCacheFromRssAndCreate(db, newsNetworkName, callback) {
     getCacheFromRss(newsNetworkName, function(cache) {
         var newsNetwork = getNewsNetwork(newsNetworkName);
@@ -515,7 +530,7 @@ function getCacheFromRss(newsNetworkName, callback) {
 
     var newsNetwork = getNewsNetwork(newsNetworkName);
 
-    var readPost = rssReader[newsNetworkName];
+    var readPost = createPostReadingFunc(newsNetwork);
 
     htmlparser.fetch(newsNetwork.rss, readPost, callback);
 }
