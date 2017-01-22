@@ -97,6 +97,7 @@ module.exports.scrape = function(network, article, callback) {
     if (!network.searchable) {
         console.error("Network '" + network.name + "' is not searchable.");
         callback(null);
+        return;
     }
 
     var link = module.networkSource[network.name] + article.split(" ").join("+");
@@ -106,6 +107,7 @@ module.exports.scrape = function(network, article, callback) {
         if (err != undefined) {
             console.error("Failed to scrape:", err.stack);
             callback(null);
+            return;
         }
 
         var $ = cheerio.load(html);
