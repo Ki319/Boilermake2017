@@ -136,7 +136,11 @@ http.createServer(function (req, res) {
                                     responseMsg = article.url + "\n";
             						responseMsg += article.title + "\n";
                                     responseMsg += newNet.realname + "\n";
-            						responseMsg += article.image;
+                                    if (article.img != null && article.img != undefined) {
+            						    responseMsg += article.image;
+                                    } else {
+                                        responseMsg += newNet.defImg;
+                                    }
                                 }
 
                                 console.log("POST data:", responseMsg);
@@ -147,7 +151,7 @@ http.createServer(function (req, res) {
                             responseMsg = scrapeData.url + "\n";
                             responseMsg += scrapeData.title + "\n";
                             responseMsg += newNet.realname + "\n";
-                            if (scrapeData.img != null) {
+                            if (scrapeData.img != null && scrapeData.img != undefined) {
                                 responseMsg += scrapeData.img;
                             } else {
                                 responseMsg += newNet.defImg;
