@@ -4,11 +4,6 @@ var newsNetwork = require("./newsNetwork.js");
 var url = require("url");
 var scraper = require("./scraper.js");
 
-newsNetwork.getCache("thenation", function(cache) {
-    console.log("ITS DONE!");
-    console.log(cache[0]);
-});
-
 function randomInt(min, max) { // [min, max] not [min, max)
       min = Math.ceil(min);
       max = Math.floor(max);
