@@ -11,7 +11,8 @@ module.networkSource = { // + delimited
     "breitbart": "http://www.breitbart.com/search/?s=",
     "theblaze": "http://www.theblaze.com/?s=",
     "washingtonpost": "https://www.washingtonpost.com/newssearch/?query=",
-    "npr": "http://www.npr.org/search/index.php?searchinput="
+    "npr": "http://www.npr.org/search/index.php?searchinput=",
+    "time": "http://search.time.com/?site=time&q="
 };
 
 module.toAbsoluteUrl = function(href) {
@@ -112,9 +113,37 @@ module.scrapeNetwork = {
 
         //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
+    },
+    "time": function($, baseLink) {
+        var link = $("div.content-title").first().children().first().attr("href");
+        var title = $("div.content-title").first().children().first().text();
+        var img = $("span.content-image").first().children().first().children().first().attr("src");
+
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
+        //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        return {"url": link, "title": title, "img": img};
+    },
+    "thenation": function($, baseLink) {
+        var link = $("div.details").first().children().first().children().first().attr("href");
+        var title = $("div.details").first().children().first().children().first().text();
+        var img = $("div.listing__img.small-4.medium-3.columns").first().children().children().attr("src");
+
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
+        console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        return {"url": link, "title": title, "img": img};
     }
-
-
 };
 
 module.exports.scrape = function(network, article, callback) {

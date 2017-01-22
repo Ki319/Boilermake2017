@@ -68,6 +68,7 @@ function getUser(uuid, lean, callback)
 
 function findNewNetwork(network, lean, callback) {
     var newLean = lean - (lean / Math.abs(lean)) * (randomInt(30, 100)) / 400;
+    console.log("lean " + lean);
     newsNetwork.getNewsNetworkByLean(newLean, function(newNetwork) {
         callback(newNetwork);
     });
@@ -94,9 +95,9 @@ http.createServer(function (req, res) {
         var uuid = data[0];
         var link = url.parse(data[1]);
         var title = data[2];
-        console.log(body, uuid, link, title);
         console.log("Connection from user: " + uuid);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
+        console.log(body, uuid, link, title, network);
         if (network == undefined) {
             console.error("Network could not be determined from '" + link + "'.");
         }
@@ -119,6 +120,8 @@ http.createServer(function (req, res) {
 					sum += obj.lean * weight;
 					weights += weight;
 				}
+                sum += network.lean;
+                weights++;
 				sum /= weights;
 
                 findNewNetwork(network, sum, function(newNet) {
