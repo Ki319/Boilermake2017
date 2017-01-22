@@ -126,6 +126,21 @@ module.scrapeNetwork = {
             img = null;
         }
 
+        //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        return {"url": link, "title": title, "img": img};
+    },
+    "thenation": function($, baseLink) {
+        var link = $("div.details").first().children().first().children().first().attr("href");
+        var title = $("div.details").first().children().first().children().first().text();
+        var img = $("div.listing__img.small-4.medium-3.columns").first().children().children().attr("src");
+
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
         console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
     }

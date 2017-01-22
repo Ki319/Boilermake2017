@@ -20,7 +20,7 @@ var rssList = [
     {name: "cbsnews", realname: "CBS News", domain: "www.cbsnews.com", rss: 'http://www.cbsnews.com/latest/rss/main', lean: -0.2, cache: [], searchable: false},
     {name: "washingtonpost", realname: "Washington Post", domain: "www.washingtonpost.com", rss: 'http://feeds.washingtonpost.com/rss/politics', lean: -0.27, cache: [], searchable: true},
     {name: "time", realname: "Time", domain: "www.time.com", rss: 'http://time.com/feed/', lean: -0.33, cache: [], searchable: true},
-    {name: "nytimes", realname: "New York Times", domain: "www.nytimes.com", rss: 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml', lean: -0.4, cache: [], searchable: true},
+    {name: "nytimes", realname: "New York Times", domain: "www.nytimes.com", rss: 'http://rss.nytimes.com/services/xml/rss/nyt/Politics.xml', lean: -0.4, cache: [], searchable: false},
     {name: "npr", realname: "NPR", domain: "www.npr.org", rss: 'http://www.npr.org/rss/rss.php?id=1001', lean: -0.47, cache: [], searchable: true}, // (top stories)
     {name: "msnbc", realname: "MSNBC", domain: "www.msnbc.com", rss: 'http://www.msnbc.com/feeds/latest', lean: -0.53, cache: [], searchable: false},
     {name: "mediamatters", realname: "Media Matters", domain: "www.mediamatters.org", rss: 'http://mediamatters.org/rss/all.rss', lean: -0.6, cache: [], searchable: false},
