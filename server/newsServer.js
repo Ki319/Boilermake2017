@@ -139,6 +139,7 @@ http.createServer(function (req, res) {
             						responseMsg += article.title + "\n";
                                     responseMsg += network.realname + "\n";
             						responseMsg += article.image;
+                                    console.log(article.image);
                                 }
 
                                 console.log("POST data:", responseMsg);

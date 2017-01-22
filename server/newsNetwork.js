@@ -292,6 +292,7 @@ rssReader["rollcall"] = createGeneralReader([
     ['link'],
     []
 ]);
+
 rssReader["foxnews"] = function(post) {
     var obj = createGeneralReader([
       ['title'],
