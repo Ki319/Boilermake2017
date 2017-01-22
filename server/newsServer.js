@@ -68,7 +68,7 @@ function getUser(uuid, lean, callback)
 
 function findNewNetwork(network, lean, callback) {
     var newLean = lean - (lean / Math.abs(lean)) * (randomInt(30, 100)) / 400;
-    console.log("lean " + lean);
+    console.log("lean " + lean + " " + newLean);
     newsNetwork.getNewsNetworksByLean(network, newLean, function(newNetworks) {
         callback(newNetworks[randomInt(0, newNetworks.length - 1)]);
     });

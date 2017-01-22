@@ -226,10 +226,12 @@ module.exports.scrape = function(network, article, callback) {
         return;
     }
 
-    var query = querystring.stringify({query: "article"}).split("%20").join("+");
+    var query = querystring.stringify({a: article}).split("%20").join("+");
+    query = query.substring(2);
+
     findKeywords(query, function(keywordsAsString) {
 
-      var link = module.networkSource[network.name] + query;
+      var link = module.networkSource[network.name] + keywordsAsString;
       console.log("Scraping " + link);
 
       request(link, function(err, res, html) {

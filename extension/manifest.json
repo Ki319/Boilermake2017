@@ -22,7 +22,7 @@
 	"activeTab",
 	"debugger",
 	"http://10.186.148.35:9090/",
-	"storage"
+	"storage", "contextMenus"
   ],
   
    "content_scripts": [
