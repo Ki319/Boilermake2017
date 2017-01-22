@@ -326,12 +326,25 @@ rssReader["rollcall"] = createGeneralReader([
     []
 ]);
 
+rssReader["foxnews"] = function(post) {
+    console.log(post);
+    var obj = createGeneralReader([
+      ['title'],
+      ['link'],
+      []
+    ])(post);
+
+    obj.image = '';
+
+    return obj;
+}
+
 function createGeneralReader(arr) {
     return function(post) {
         var obj = {};
         var cur;
 
-        console.log(post);
+        //console.log(post);
 
         cur = arr[0];
         obj.title = post;
@@ -351,7 +364,7 @@ function createGeneralReader(arr) {
             obj.image = obj.image[cur[i]];
         }
 
-        console.log(obj);
+        // console.log(obj);
 
         // process.exit();
 
