@@ -14,11 +14,9 @@ var alchemy_language = new AlchemyLanguageV1({
   "apikey": "3f9b78a8f4fa659b8d31a0c2c491ea216a8a92c0"
 });
 
-var params = {
-  text: 'IBM Watson won the Jeopardy television show hosted by Alex Trebek'
-};
+var params = 'IBM Watson won the Jeopardy television show hosted by Alex Trebek';
 
-findKeywords(params, function(keywordsAsString) {
+findKeywords(asldkjf, function(keywordsAsString) {
   console.log(keywordsAsString);
 });
 
@@ -50,7 +48,7 @@ function findKeywords(initialString, callback) {
 
   alchemy_language.keywords(params, function (err, response) {
     if (err) {
-      console.log('error:', err);
+      console.log('error with keywords');
       callback(initialString);
     }
     else {
