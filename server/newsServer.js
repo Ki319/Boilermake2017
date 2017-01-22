@@ -130,6 +130,7 @@ http.createServer(function (req, res) {
                     scraper.scrape(network, title, function(scrapeData) {
                         var responseMsg = "";
                         if (!scrapeData) {
+                            console.log("Resorting to RSS.");
                             article = newNetwork.cache[randomInt(0, newNetwork.cache.length - 1)];
                             if (article != null) {
                                 responseMsg = article.url + "\n";
@@ -142,6 +143,7 @@ http.createServer(function (req, res) {
                             responseMsg += scrapeData.img + "\n";
                         }
                         responseMsg += network.name;
+                        console.log("POST data:", responseMsg);
                         res.writeHead(200, {"Content_Type" : "text/plain"});
                         res.end(responseMsg);
                     });
