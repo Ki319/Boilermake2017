@@ -95,7 +95,7 @@ module.exports.scrape = function(network, article, callback) {
 
     if (!network.searchable) {
         console.error("Network '" + network.name + "' is not searchable.");
-        return null;
+        callback(null);
     }
 
     var link = module.networkSource[network.name] + article.split(" ").join("+");
