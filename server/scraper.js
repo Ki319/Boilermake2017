@@ -147,8 +147,8 @@ module.exports.scrape = function(network, article, callback) {
         return;
     }
 
-    //var query = querystring.stringify({query: "SELECT name FROM user WHERE uid = me()"});
-    var link = module.networkSource[network.name] + article.split(" ").join("+");
+    var query = querystring.stringify({query: "article"}).split("%20").join("+");
+    var link = module.networkSource[network.name] + query;
     console.log("Scraping " + link);
 
     request(link, function(err, res, html) {
