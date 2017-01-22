@@ -544,17 +544,10 @@ function getCache(newsNetworkName, callback) {
     // return cache
 }
 
-var matasd = new RegExp("^https");
-
 function createPostReadingFunc(newsNetwork) {
     return function functionName(post) {
         console.log(newsNetwork.name, rssReader[newsNetwork.name]);
         var obj = rssReader[newsNetwork.name](post);
-        if (matasd.exec(obj.url)) {
-            var str = obj.url;
-            console.log("STRING : " + str);
-            obj.url = str.slice(0, 5) + str.slice(6, str.length);
-        }
         if (obj.image.length == 0) {
             obj.image = newsNetwork.defaultImg;
         }
