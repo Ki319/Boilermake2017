@@ -4,14 +4,14 @@ var querystring = require("querystring");
 var cheerio = require("cheerio");
 
 module.networkSource = { // + delimited
-    "vox": "http://www.vox.com/results?q=",
+    //"vox": "http://www.vox.com/results?q=",
     "huffingtonpost": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
     "wnd": "http://www.wnd.com/?s=",
     "breitbart": "http://www.breitbart.com/search/?s="
 };
 
 module.scrapeNetwork = {
-    "vox": function($) {
+    /*"vox": function($) {
         // Invalid, uses AJAX.
         console.log($('a.gs-title').first());
         var link = $('a.gs-title').first().attr("href");
@@ -22,7 +22,7 @@ module.scrapeNetwork = {
         return {"url": link, "title": title, "img": img};
         //top.children('.gsc-thumbnail-inside').first().
 
-    },
+    },*/
     "huffingtonpost": function($) {
         var link = $('.card__link').first().attr('href');
         var title = $('.card__link').first().text();
@@ -30,6 +30,15 @@ module.scrapeNetwork = {
 
         img = img.replace("background-image: url(", "");
         img = img.replace(");", "");
+
+        console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        return {"url": link, "title": title, "img": img};
+    },
+    "wnd": function($) {
+        var item = $("li.has-thumbnail").first();
+        var title = item.children("h2").first().children().first().text();
+        var link = item.children("h2").first().children().first().attr("href");
+        var img = item.children("figure").first().children().first().attr("src");
 
         console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};

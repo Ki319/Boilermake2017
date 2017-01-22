@@ -77,7 +77,17 @@ function getNewsNetworkByDomain(domain) {
     }
 }
 
-function getNewsNetworksByLean(low, high) {
+function getNewsNetworkByLean(targetLean, callback) {
+    var bestNet = rssList[0];
+    for (var i = 1; i < rssList.length; i++) {
+        if (Math.abs(rssList[i].lean - targetLean) < Math.abs(bestNet.lean - targetLean)) {
+            bestNet = rssList[i];
+        }
+    }
+    callback(bestNet);
+}
+
+function getNewsNetworksByLean(low, high, callback) {
     if (high < low) {
         var temp = high;
         high = low;
@@ -89,7 +99,7 @@ function getNewsNetworksByLean(low, high) {
             results.push(rssList[i]);
         }
     }
-    return results;
+    callback(results);
 }
 
 var rssReader = [];
@@ -341,6 +351,7 @@ function getCacheFromRss(newsNetworkName, callback) {
 }
 
 module.exports.getNewsNetwork = getNewsNetwork;
+module.exports.getNewsNetworkByLean = getNewsNetworkByLean;
 module.exports.getNewsNetworksByLean = getNewsNetworksByLean;
 module.exports.getNewsNetworkByDomain = getNewsNetworkByDomain;
 
