@@ -1,6 +1,5 @@
 var request = require('request')
   , FeedParser = require('feedparser')
-  , Iconv = require('iconv').Iconv
   , zlib = require('zlib');
 
 function fetch(feed, readPost, callback) {
@@ -21,7 +20,7 @@ function fetch(feed, readPost, callback) {
     var encoding = res.headers['content-encoding'] || 'identity'
       , charset = getParams(res.headers['content-type'] || '').charset;
     res = maybeDecompress(res, encoding);
-    res = maybeTranslate(res, charset);
+    // res = maybeTranslate(res, charset);
     res.pipe(feedparser);
   });
 
@@ -58,6 +57,7 @@ function maybeDecompress (res, encoding) {
   return decompress ? res.pipe(decompress) : res;
 }
 
+/*
 function maybeTranslate (res, charset) {
   var iconv;
   // Use iconv if its not utf8 already.
@@ -75,6 +75,7 @@ function maybeTranslate (res, charset) {
   }
   return res;
 }
+*/
 
 function getParams(str) {
   var params = str.split(';').reduce(function (params, param) {

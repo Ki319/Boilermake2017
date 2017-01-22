@@ -238,8 +238,8 @@ rssReader["cbsnews"] = createGeneralReader([
     ['rss:image', '#']
 ]);
 rssReader["washingtonpost"] = createGeneralReader([
-    [],
-    [],
+    ['title'],
+    ['link'],
     []
 ]);
 rssReader["time"] = createGeneralReader([
