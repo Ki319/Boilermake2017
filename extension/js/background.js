@@ -17,17 +17,12 @@ function httpRequest(address, data, reqType, asyncProc)
 }
 
 chrome.runtime.onMessage.addListener(function(message,sender,sendResponse){
-	httpResponse("http://home.maxocull.tech:9090/", message.msg, "POST", function(http) {
+	httpRequest("http://home.maxocull.tech:9090/", message.msg, "POST", function(http) {
 		var parsed = http.responseText.split("\n");
 		var article = parsed[0];
 		var caption = parsed[1];
 		var source = parsed[2];
-		var img = null;
-		if(parsed[3].length > 0)
-		{
-			img = new Image;
-			img.src = parsed[3];
-		}
-		sendResponse({articleLink : article, caption : caption, source : source, img : img});
+		sendResponse({articleLink : article, caption : caption, source : source, img : parsed[3]});
 	});
+	return true;
 });

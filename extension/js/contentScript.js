@@ -13,12 +13,12 @@ var newsData = [
 	{titleSign : "Salon", endSign : " - Salon.com", topShift : 70, toTopShift : 70, shiftWait : 1000, leftShift : 20, z : 0}, //salon
 	{titleSign : "WND", endSign : "", topShift : 300, toTopShift : 0, shiftWait : 200, leftShift : 20, z : 0}, // wnd
 	{titleSign : "Breitbart News Network", endSign : "", topShift : 230, toTopShift : 0, shiftWait : 1300, leftShift : 20, z : 0}, //breitbart
-	{titleSign : "TheBlaze", endSign : " - TheBlaze", topShift : 50, toTopShift : 50, shiftWait : 1000, leftShift : 20, z : 1000}, //theblaze
+	{titleSign : "TheBlaze", endSign : " – TheBlaze", topShift : 50, toTopShift : 50, shiftWait : 1000, leftShift : 20, z : 1000}, //theblaze
 	{titleSign : "Fox News", endSign : " | Fox News", topShift : 150, toTopShift : 0, shiftWait : 500, leftShift : 20, z : 0}, //foxnews
 	{titleSign : "Washington Times", endSign : " - Washington Times", topShift : 130, toTopShift : 130, shiftWait : 600, leftShift : 20, z : 1000}, //washington times
 	{titleSign : "The Wall Street Journal", endSign : " - WSJ", topShift : 300, toTopShift : 80, shiftWait : 500, leftShift : 20, z : 3}, // wallstreet journal
-	{titleSign : "Forbes", endSign : "", topShift : 500, toTopShift : 0, shiftWait : 100, leftShift : 20, z : 10000}, //forbes
-	{titleSign : "RealClearPolitics", endSign : " | RealClearPolitics", topShift : 10}, //realclearpolitics
+	{titleSign : "Forbes", endSign : "", topShift : 200, toTopShift : 0, shiftWait : 300, leftShift : 20, z : 10000}, //forbes
+	{titleSign : "RealClearPolitics", endSign : " | RealClearPolitics", topShift : 80, toTopShift : 0, leftShift : 20, z : 10000}, //realclearpolitics
 	{titleSign : "USA TODAY", endSign : "", topShift : 120, toTopShift : 50, shiftWait : 300, leftShift : 20, z : 5000}, // usa today
 	{titleSign : "ABC News", endSign : " - ABC News", topShift : 50, toTopShift : 50, shiftWait : 600, leftShift : 20, z : 1000038}, //abc news
 	{titleSign : "CBS News", endSign : " - CBS News", topShift : 100, toTopShift : 0, shiftWait : 400, leftShift : 10, z : 2147000000}, //cbs news
@@ -100,29 +100,13 @@ function drawCanvas()
 	context.shadowOffsetX = 5;
 	context.shadowOffsetY = 5;
 	
-	context.font = "28px Arial Black";
+	context.font = (28 - (source.length > 8 ? (source.length - 8) : 0)) + "px Arial Black";
 	context.fillStyle = 'black';
 	context.textAlign = 'center';
 	context.strokeStyle = 'white';
 	context.lineWidth = .75;
-	context.fillText(source.length < 10 ? source : source.substring(0, 10), canvas.width / 2, canvas.height / 6);
-	context.strokeText(source.length < 10 ? source : source.substring(0, 10), canvas.width / 2, canvas.height / 6);
-	
-	if(img)
-	{
-		var ratio = img.width / img.height;
-	
-		var height = canvas.height / 2;
-		var width = ratio * height;
-		if(width >= canvas.width)
-		{
-			height = canvas.width / ratio;
-			width = canvas.width;
-		}
-	
-		context.drawImage(img, (canvas.width - width) / 2, canvas.height / 5, width, height);	
-	}
-
+	context.fillText(source, canvas.width / 2, canvas.height / 6);
+	context.strokeText(source, canvas.width / 2, canvas.height / 6);
 	
 	var currentLine = 0;
 	var words = caption.split(" ");
@@ -140,8 +124,8 @@ function drawCanvas()
 			if(currentLine == 0)
 			{
 				currentLine++;
-				context.fillText(text, canvas.width / 2, canvas.height * 4.2 / 5);
-				context.strokeText(text, canvas.width / 2, canvas.height * 4.2 / 5);
+				context.fillText(text, canvas.width / 2, canvas.height * 4.2 / 5 - (img == null ? canvas.height * 2 / 5 : 0));
+				context.strokeText(text, canvas.width / 2, canvas.height * 4.2 / 5 - (img == null ? canvas.height * 2 / 5 : 0));
 				text = words[i] + " ";
 			}
 			else
@@ -155,8 +139,23 @@ function drawCanvas()
 			text += words[i] + " ";
 		}
 	}
-	context.fillText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5);
-	context.strokeText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5);
+	context.fillText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5 - (img == null ? canvas.height * 2 / 5 : 0));
+	context.strokeText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5 - (img == null ? canvas.height * 2 / 5 : 0));
+	
+	if(img != null)
+	{
+		var ratio = img.width / img.height;
+	
+		var height = canvas.height / 2;
+		var width = ratio * height;
+		if(width >= canvas.width)
+		{
+			height = canvas.width / ratio;
+			width = canvas.width;
+		}
+	
+		context.drawImage(img, (canvas.width - width) / 2, canvas.height / 5, width, height);	
+	}
 	
 	context.restore();
 }
@@ -241,7 +240,7 @@ function process()
 
 function wait()
 {
-	if(caption)
+	if(caption && !(location.hostname === "www.cbsnews.com" || location.hostname === "www.thenation.com"))
 	{
 		process();
 	}
@@ -271,14 +270,18 @@ if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !docum
 		msg += location.href + "\n";
 		msg += news.endSign.length == 0 ? document.title : document.title.substring(0, document.title.lastIndexOf(news.endSign));
 		chrome.runtime.sendMessage({'msg' : msg}, function(response) {
-			alert(response.articleLink + "\n" + response.caption + "\n" + response.source + "\n" + response.img);
-		});
-		/*httpRequest("http://home.maxocull.tech:9090/", msg, "POST", function(http) {
-			loadData(http);
+			articleLink = response.articleLink;
+			caption = response.caption;
+			source = response.source;
+			if(!location.href.startsWith("https"))
+			{
+				img = new Image;
+				img.src = response.img;
+			}
 			if(location.hostname === "www.cbsnews.com" || location.hostname === "www.thenation.com")
 			{
 				process();
 			}
-		});*/
+		});
 	});
 }
