@@ -100,6 +100,7 @@ http.createServer(function (req, res) {
         var link = url.parse(data[1]);
         var title = data[2];
         //console.log(body, uuid, link, title);
+        console.log("Connection from user: " + uuid);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
         if (network == undefined) {
             console.error("Network could not be determined.");
@@ -129,7 +130,8 @@ http.createServer(function (req, res) {
                     scraper.scrape(network, title, function(scrapeData) {
                         var responseMsg = "";
                         if (!scrapeData) {
-                            article = newNetwork.cache[randomInt(0, newNetwork.cache.length - 1)];
+                            console.log("Resorting to RSS.");
+                            article = network.cache[randomInt(0, network.cache.length - 1)];
                             if (article != null) {
                                 responseMsg = article.url + "\n";
         						responseMsg += article.caption + "\n";
@@ -138,8 +140,10 @@ http.createServer(function (req, res) {
                         } else {
                             responseMsg = scrapeData.url + "\n";
                             responseMsg += scrapeData.title + "\n";
-                            responseMsg += scrapeData.img;
+                            responseMsg += scrapeData.img + "\n";
                         }
+                        responseMsg += network.name;
+                        console.log("POST data:", responseMsg);
                         res.writeHead(200, {"Content_Type" : "text/plain"});
                         res.end(responseMsg);
                     });

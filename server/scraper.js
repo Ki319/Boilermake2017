@@ -6,10 +6,11 @@ var url = require("url");
 
 module.networkSource = { // + delimited
     //"vox": "http://www.vox.com/results?q=",
-    "huffingtonpost": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
-    "wnd": "http://www.wnd.com/?s=",
-    "breitbart": "http://www.breitbart.com/search/?s=",
-    "theblaze": "http://www.theblaze.com/?s="
+    "Huffington Post": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
+    "WND": "http://www.wnd.com/?s=",
+    "Breitbart": "http://www.breitbart.com/search/?s=",
+    "The Blaze": "http://www.theblaze.com/?s=",
+    "Washington Post": "https://www.washingtonpost.com/newssearch/?query="
 };
 
 module.toAbsoluteUrl = function(href) {
@@ -31,45 +32,71 @@ module.scrapeNetwork = {
         //top.children('.gsc-thumbnail-inside').first().
 
     },*/
-    "huffingtonpost": function($, baseLink) {
+    "Huffington Post": function($, baseLink) {
         var link = $('.card__link').first().attr('href');
         var title = $('.card__link').first().text();
         var img = $('div.card__image__src').first().attr('style');
+        if (!title || !link) {
+            return null;
+        }
 
-        img = img.replace("background-image: url(", "");
-        img = img.replace(");", "");
+        if (!img) {
+            img = null;
+        } else {
+            img = img.replace("background-image: url(", "");
+            img = img.replace(");", "");
+        }
 
         //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
     },
-    "wnd": function($, baseLink) {
+    "WND": function($, baseLink) {
         var item = $("li.has-thumbnail").first();
         var title = item.children("h2").first().children().first().text();
         var link = url.resolve(baseLink, item.children("h2").first().children().first().attr("href"));
         var img = url.resolve(baseLink, item.children("figure").first().children().first().attr("src"));
 
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
         //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
     },
-    "theblaze": function($, baseLink) {
+    "The Blaze": function($, baseLink) {
         var item = $("a.feed-link").first();
         var link = url.resolve(baseLink, item.attr("href"));
         var title = item.children(".feed-bottom").first().children().first().text().trim();
         var img = url.resolve(baseLink, item.children("div.feed-img").first().children().first().attr("src"));
 
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
         console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
+    },
+    "Washington Post": function($, baseLink) {
+        // ...
     }
+
 };
 
 module.exports.scrape = function(network, article, callback) {
-    if (typeof network == "string") {
+    /*if (typeof network == "string") {
         network = newsNetwork.getNewsNetwork(network);
-    }
+    }*/
+    console.log(network);
 
     if (!network.searchable) {
         console.error("Network '" + network.name + "' is not searchable.");
-        return null;
+        callback(null);
     }
 
     var link = module.networkSource[network.name] + article.split(" ").join("+");
@@ -78,7 +105,7 @@ module.exports.scrape = function(network, article, callback) {
     request(link, function(err, res, html) {
         if (err != undefined) {
             console.error("Failed to scrape:", err.stack);
-            return;
+            callback(null);
         }
 
         var $ = cheerio.load(html);
