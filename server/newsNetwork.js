@@ -258,11 +258,11 @@ rssReader["usatoday"] = function(post) {
     return obj
 }
 
-// works small image, but still good size
+// works
 rssReader["abcnews"] = createGeneralReader([
     ['title'],
     ['link'],
-    ['image', 'url']
+    ['media:thumbnail', 5, '@', 'url'] // alternate ['image', 'url'] small image, but still good size
 ]);
 
 // works, extremely small image
@@ -324,7 +324,7 @@ rssReader["mediamatters"] = function(arg) {
     return obj;
 }
 
-// small
+// works, small would like bigger
 rssReader["thenation"] = function(arg) {
     var obj = createGeneralReader([
         ['title'],
@@ -337,27 +337,35 @@ rssReader["thenation"] = function(arg) {
     return obj;
 }
 
+// works, extremely small image
 rssReader["alternet"] = createGeneralReader([
     ['title'],
     ['link'],
-    []
+    ['enclosures', 0, 'url']
 ]);
+
+// no image
 rssReader["politico"] = createGeneralReader([
     ['title'],
     ['link'],
     []
 ]);
+
+// no image
 rssReader["thehill"] = createGeneralReader([
     ['title'],
     ['link'],
-    []
+    ['content:encoded', 'p']
 ]);
+
+// no image
 rssReader["rollcall"] = createGeneralReader([
     ['title'],
     ['link'],
     []
 ]);
 
+// works, no image
 rssReader["foxnews"] = function(post) {
     console.log(post);
     var obj = createGeneralReader([
@@ -379,8 +387,6 @@ function createGeneralReader(arr, flag) {
         var obj = {};
         var cur;
 
-        console.log(post);
-
         cur = arr[0];
         obj.title = post;
         for (var i = 0; i < cur.length; i++) {
@@ -401,13 +407,10 @@ function createGeneralReader(arr, flag) {
                 break;
             }
         }
+
         if (flag && typeof obj.image != 'string') {
             obj.image = '';
         }
-
-        // console.log(obj);
-
-        // process.exit();
 
         return obj;
     };
@@ -426,20 +429,21 @@ function scrapeAllRss(callback) {
 var url = 'mongodb://localhost:27017/news';
 
 function getCache(newsNetworkName, callback) {
+    console.log('looking for network: ' + newsNetworkName);
     mongodb.MongoClient.connect(url, function(err, db) {
         if (err != null) {
           console.log("error?");
           console.log(err);
         }
         else {
-            console.log("Connected successfully to server");
+            console.log("Connected successfully to mongo server");
         }
 
       // check database for cache
       mongodb.findDocument(db, {'name': newsNetworkName},function(result) {
           // if news network is found
           if (1 <= result.length) {
-              console.log("network found");
+              console.log("network found in database");
               var network = result[0].data;
 
               // if lastUpdate was less than 1 hour ago
@@ -449,13 +453,14 @@ function getCache(newsNetworkName, callback) {
                   db.close();
               }
               else {
+                  console.log("updating network");
                   // check rss
                   getCacheFromRssAndUpdate(db, newsNetworkName, callback)
               }
 
           }
           else {
-              console.log("network not found");
+              console.log("network not found in database");
               getCacheFromRssAndCreate(db, newsNetworkName, callback)
           }
       });
@@ -476,10 +481,9 @@ function getCacheFromRssAndCreate(db, newsNetworkName, callback) {
         var newsNetwork = getNewsNetwork(newsNetworkName);
         newsNetwork.lastUpdate = Date.now();
         newsNetwork.cache = cache;
-        console.log(newsNetwork);
         var set = {"name": newsNetworkName, "data": newsNetwork};
         mongodb.insertDocument(db, set, function(result) {
-            console.log("Added to Database");
+            console.log("network added to database");
             db.close();
         });
         callback(cache);
@@ -498,6 +502,7 @@ function getCacheFromRssAndUpdate(db, newsNetworkName, callback) {
             "data.cache": newsNetwork.cache,
         }};
         mongodb.updateDocument(db, {'name': newsNetworkName}, set, function(result) {
+            console.log("network updated");
             db.close();
         });
         callback(cache);
@@ -506,6 +511,8 @@ function getCacheFromRssAndUpdate(db, newsNetworkName, callback) {
 
 // DONE
 function getCacheFromRss(newsNetworkName, callback) {
+    console.log("parsing rss");
+
     var newsNetwork = getNewsNetwork(newsNetworkName);
 
     var readPost = rssReader[newsNetworkName];

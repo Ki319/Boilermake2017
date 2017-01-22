@@ -1,4 +1,4 @@
-var request = require('request')
+  var request = require('request')
   , FeedParser = require('feedparser')
   , zlib = require('zlib');
 
@@ -43,6 +43,7 @@ function simpleGen(arr, readPost) {
 
 function functionGen(arr, callback) {
   return function() {
+    console.log('cache generated from rss');
     callback(arr);
   };
 }
