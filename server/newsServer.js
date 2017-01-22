@@ -99,7 +99,7 @@ http.createServer(function (req, res) {
         var uuid = data[0];
         var link = url.parse(data[1]);
         var title = data[2];
-        console.log(data, uuid, link, title);
+        console.log(body, uuid, link, title);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
         if (network == undefined) {
             console.error("Network could not be determined.");
