@@ -89,9 +89,10 @@ module.scrapeNetwork = {
 };
 
 module.exports.scrape = function(network, article, callback) {
-    if (typeof network == "string") {
+    /*if (typeof network == "string") {
         network = newsNetwork.getNewsNetwork(network);
-    }
+    }*/
+    console.log(network);
 
     if (!network.searchable) {
         console.error("Network '" + network.name + "' is not searchable.");
