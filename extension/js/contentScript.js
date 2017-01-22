@@ -187,16 +187,16 @@ function dblClickArticle(e)
 
 function process(http)
 {
-	//if(http.responseText.length == 0)
-		//return;
+	if(http.responseText.length == 0)
+		return;
 	
-	//var parsed = http.responseText.split("\n");
+	var parsed = http.responseText.split("\n");
 	
 	img = new Image;
 	
-	img.src = "http://pngimg.com/upload/lion_PNG3805.png";//parsed[3];
-	articleLink = "http://pngimg.com/upload/lion_PNG3805.png";//parsed[0];
-	caption = "Killed in a school by a zoo";//parsed[1];
+	img.src = parsed[3];
+	articleLink = parsed[0];
+	caption = parsed[1];
 	
 	canvas = document.createElement('canvas');
 	canvas.id = "a9d9d9djgdj";
@@ -239,8 +239,7 @@ function startup()
 				chrome.storage.sync.set({userid: userid});
 			}
 		});
-		process("")
-		//httpRequest("http://home.maxocull.tech:9090/", userid + "\n" + location.url, "POST", process);
+		httpRequest("http://home.maxocull.tech:9090/", userid + "\n" + location.url + "\n" + document.title, "POST", process);
 	}
 }
 
