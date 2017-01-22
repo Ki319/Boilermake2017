@@ -3,6 +3,69 @@ var request = require("request");
 var querystring = require("querystring");
 var cheerio = require("cheerio");
 var url = require("url");
+var watson = require("watson-developer-cloud");
+
+
+var AlchemyLanguageV1 = require('watson-developer-cloud/alchemy-language/v1');
+
+var alchemy_language = new AlchemyLanguageV1({
+  "url": "https://gateway-a.watsonplatform.net/calls",
+  // "note": "It may take up to 5 minutes for this key to become active",
+  "apikey": "3f9b78a8f4fa659b8d31a0c2c491ea216a8a92c0"
+});
+
+var params = {
+  text: 'IBM Watson won the Jeopardy television show hosted by Alex Trebek'
+};
+
+/*
+alchemy_language.keywords(params, function (err, response) {
+  if (err) {
+    console.log('error:', err);
+  }
+  else {
+    var array = response.keywords;
+    if (array.length < 0) {
+      console.log('no keywords')
+    }
+    else {
+      var searchString = '';
+      for (var i = 0; i < array.length; i++) {
+        searchString += array[i].text + ' ';
+      }
+      console.log(searchString);
+    }
+  }
+});
+*/
+
+function findKeywords(initialString, callback) {
+  var params = {
+    text: initialString
+  };
+
+  alchemy_language.sentiment(params, function (err, response) {
+    if (err) {
+      console.log('error:', err);
+      callback(initialString);
+    }
+    else {
+      var array = response.keywords;
+      if (array.length > 0) {
+        callback(initialString)
+      }
+      else {
+        var searchString = '';
+        for (var i = 0; i < array.length; i++) {
+          searchString += array[i].text + ' ';
+        }
+        callback(searchString);
+      }
+    }
+  });
+
+}
+
 
 module.networkSource = { // + delimited
     "huffingtonpost": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
@@ -164,18 +227,22 @@ module.exports.scrape = function(network, article, callback) {
     }
 
     var query = querystring.stringify({query: "article"}).split("%20").join("+");
-    var link = module.networkSource[network.name] + query;
-    console.log("Scraping " + link);
+    findKeywords(query, function(keywordsAsString) {
 
-    request(link, function(err, res, html) {
-        if (err != undefined) {
-            console.error("Failed to scrape:", err.stack);
-            callback(null);
-            return;
-        }
+      var link = module.networkSource[network.name] + query;
+      console.log("Scraping " + link);
 
-        var $ = cheerio.load(html);
-        console.log("Scraping network '" + network.name + "'");
-        callback(module.scrapeNetwork[network.name]($, link));
-    });
+      request(link, function(err, res, html) {
+          if (err != undefined) {
+              console.error("Failed to scrape:", err.stack);
+              callback(null);
+              return;
+          }
+
+          var $ = cheerio.load(html);
+          console.log("Scraping network '" + network.name + "'");
+          callback(module.scrapeNetwork[network.name]($, link));
+      });
+
+    })
 }
