@@ -1,5 +1,5 @@
-var parser = require("rss-parser");
 var mongodb = require("./mongodb.js");
+var htmlparser = require("./feedparser.js");
 
 var rssList = [
     {name: "vox", domain: "www.vox.com", rss: 'http://www.vox.com/rss/index.xml', lean: -0.67, cache: [], searchable: false},
@@ -94,16 +94,18 @@ function getNewsNetworksByLean(low, high) {
 
 var rssReader = [];
 
-function rssContentParser(entry) {
+function rssContentParser(content) {
     var re = [];
     re[0] = new RegExp("<[iI]mg.*src=\".*\" \/>");
     re[1] = new RegExp("src=\".*\"");
     re[2] = new RegExp("\".*\"");
 
-    var image = entry.content.substring(0, 500);
+    var image = content;
+    console.log(image);
 
     for (var i = 0; i < re.length; i++) {
         image = re[i].exec(image);
+        console.log(image);
         if (image == null) {
             return "";
         }
@@ -115,139 +117,171 @@ function rssContentParser(entry) {
     return image;
 }
 
-rssReader["vox"] = createGeneralReader(rssContentParser);
+rssReader["vox"] = function(post) {
+    var obj = createGeneralReader([
+        ['atom:title', '#'],
+        ['link'],
+        ['atom:content', '#']
+    ])(post);
 
-// TODO enclosure
-rssReader["cnn"] = createGeneralReader(function(entry) {
-    console.log(entry);
-    return entry.enclosure.link;
-});
+    obj.image = rssContentParser(obj.image);
+    console.log(obj);
+    console.log(null.drop);
 
-// TODO
-rssReader["motherjones"] = createGeneralReader(function(entry) {
-    console.log(entry);
-    return null;
-});
+    return obj;
+};
 
-// TODO enclosure
-rssReader["huffingtonpost"] = createGeneralReader(function(entry) {
-    console.log(entry);
-    return entry.enclosure.link;
-});
+rssReader["cnn"] = createGeneralReader([
+    ['rss:title', '#'],
+    ['rss:link', '#'],
+    ['meta', 'image', 'url']
+]);
 
-// TODO
-rssReader["salon"] = createGeneralReader(function(entry) {
-    console.log(entry);
-    return null;
-});
+rssReader["motherjones"] = createGeneralReader([
+    ['title'],
+    ['origlink'],
+    ['meta', 'image', 'url']
+]);
 
-// Some articles don't have a thumbnail
-rssReader["wnd"] = createGeneralReader(function(entry) {
-    entry.content = entry["content:encoded"];
-    return rssContentParser(entry);
-});
+rssReader["huffingtonpost"] = createGeneralReader([
+    ['title'],
+    ['link'],
+    ['enclosures', 0, 'url']
+]);
 
-// TODO enclosure
-rssReader["breitbart"] = createGeneralReader(function(entry) {
-    return entry.enclosure.link;
-});
+rssReader["salon"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
 
-// TODO
-rssReader["theblaze"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
+rssReader["washingtontimes"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
 
-// TODO
-rssReader["foxnews"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
+rssReader["wsj"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
 
-// TODO
-rssReader["washingtontimes"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
+rssReader["forbes"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
 
-// TODO <media:content url=""
-rssReader["wsj"] = createGeneralReader(function(entry) {
-    console.log(entry);
-    console.log(entry.content);
-    return entry.image;
-});
+rssReader["realclearpolitics"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
 
-// TODO <media:content url=""
-rssReader["forbes"] = createGeneralReader(function(entry) {
-    console.log(entry);
-    console.log(entry.content);
-    console.log(null.all);
-    return entry.image;
-});
+rssReader["usatoday"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
 
-// TODO
-rssReader["realclearpolitics"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
+rssReader["abcnews"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
 
-// TODO
-rssReader["usatoday"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
+rssReader["cbsnews"] = createGeneralReader([
+    ['title'],
+    ['rss:link', '#'],
+    ['rss:image', '#']
+]);
+rssReader["washingtonpost"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["time"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["nytimes"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["npr"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["msnbc"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["mediamatters"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["thenation"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["alternet"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["politico"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["thehill"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
+rssReader["rollcall"] = createGeneralReader([
+    [],
+    [],
+    []
+]);
 
-// TODO entry
-rssReader["abcnews"] = createGeneralReader(function(entry) {
-    console.log(entry);
-    console.log(entry.thumbnail);
-    console.log(null.thumbnail);
-    return entry.image;
-});
+function createGeneralReader(arr) {
+    return function(post) {
+        var obj = {};
+        var cur;
 
-// TODO image
-rssReader["cbsnews"] = createGeneralReader(function(entry) {
-    console.log(entry);
-    return entry.image;
-});
-rssReader["washingtonpost"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["time"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["nytimes"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["npr"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["msnbc"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["mediamatters"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["thenation"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["alternet"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["politico"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["thehill"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
-rssReader["rollcall"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
+        console.log(post);
 
-function createGeneralReader(entryFunction) {
-    return function(articles, cache) {
-        articles.feed.entries.forEach(function(entry) {
-            var obj = {};
-            obj.title = entry.title;
-            obj.url = entry.link;
-            obj.image = entryFunction(entry);
-            cache.push(obj);
-        }, cache, entryFunction);
+        cur = arr[0];
+        obj.title = post;
+        for (var i = 0; i < cur.length; i++) {
+            obj.title = obj.title[cur[i]];
+        }
+
+        cur = arr[1];
+        obj.url = post;
+        for (var i = 0; i < cur.length; i++) {
+            obj.url = obj.url[cur[i]];
+        }
+
+        cur = arr[2];
+        obj.image = post;
+        for (var i = 0; i < cur.length; i++) {
+            obj.image = obj.image[cur[i]];
+        }
+
+        console.log(obj);
+
+        process.exit();
+
+        return obj;
     };
 }
 
@@ -345,11 +379,10 @@ function getCacheFromRssAndUpdate(db, newsNetworkName, callback) {
 // DONE
 function getCacheFromRss(newsNetworkName, callback) {
     var newsNetwork = getNewsNetwork(newsNetworkName);
-    parser.parseURL(newsNetwork.rss, function(err, parsed) {
-        var cache = [];
-        rssReader[newsNetworkName](parsed, cache);
-        callback(cache);
-    });
+
+    var readPost = rssReader[newsNetworkName];
+
+    htmlparser.fetch(newsNetwork.rss, readPost, callback);
 }
 
 module.exports.getNewsNetwork = getNewsNetwork;
