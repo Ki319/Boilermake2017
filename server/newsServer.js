@@ -140,7 +140,7 @@ http.createServer(function (req, res) {
                                     if (article.image != null && article.image != undefined && article.image != "undefined") {
             						    responseMsg += article.image;
                                     } else {
-                                        responseMsg += newNet.defImg;
+                                        responseMsg += newNet.defaultImg;
                                     }
                                 }
 
@@ -156,7 +156,7 @@ http.createServer(function (req, res) {
                             if (scrapeData.img != null && scrapeData.img != undefined) {
                                 responseMsg += scrapeData.img;
                             } else {
-                                responseMsg += newNet.defImg;
+                                responseMsg += newNet.defaultImg;
                             }
                             console.log("POST data:", responseMsg);
                             res.writeHead(200, {"Content_Type" : "text/plain"});
