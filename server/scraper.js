@@ -7,11 +7,12 @@ var url = require("url");
 module.networkSource = { // + delimited
     "huffingtonpost": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
     "wnd": "http://www.wnd.com/?s=",
-    "breitbart": "http://www.breitbart.com/search/?s=",
     "theblaze": "http://www.theblaze.com/?s=",
     "washingtonpost": "https://www.washingtonpost.com/newssearch/?query=",
     "npr": "http://www.npr.org/search/index.php?searchinput=",
-    "time": "http://search.time.com/?site=time&q="
+    "time": "http://search.time.com/?site=time&q=",
+    "thenation": "http://www.thenation.com/?post_type=article&ssearch=",
+    "politico": "http://www.politico.com/search?q="
 };
 
 module.scrapeNetwork = {
@@ -85,7 +86,7 @@ module.scrapeNetwork = {
             img = null;
         }
 
-        console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
     },
     "npr": function($, baseLink) {
@@ -122,6 +123,21 @@ module.scrapeNetwork = {
         var link = $("div.details").first().children().first().children().first().attr("href");
         var title = $("div.details").first().children().first().children().first().text();
         var img = $("div.listing__img.small-4.medium-3.columns").first().children().children().attr("src");
+
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
+        console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        return {"url": link, "title": title, "img": img};
+    },
+    "politico": function($, baseLink) {
+        var link = $("div.summary").first().children().children().children().attr("href");
+        var title = $("div.summary").first().children().children().children().text();
+        var img = $("div.fig-graphic").first().children().children().first().attr("src");
 
         if (!title || !link) {
             return null;
