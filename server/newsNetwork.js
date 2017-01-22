@@ -15,7 +15,7 @@ var rssList = [
     {name: "wsj", realname: "Wall Street Journal", domain: "www.wsj.com", rss: 'http://www.wsj.com/xml/rss/3_7085.xml', lean: 0.4, cache: [], searchable: false}, // (world news)
     {name: "forbes", realname: "Forbes", domain: "www.forbes.com", rss: 'https://www.forbes.com/real-time/feed2/', lean: 0.33, cache: [], searchable: false},
     {name: "realclearpolitics", realname: "RealClearPolitics", domain: "www.realclearpolitics.com", rss: 'https://feeds.feedburner.com/realclearpolitics/qlMj', lean: 0.2, cache: [], searchable: false},
-    {name: "usatoday", realname: "USA Today", domain: "www.usatoday.com", rss: 'http://rssfeeds.usatoday.com/usatoday-NewsTopStories', lean: 0, cache: [], searchable: false},
+    {name: "usatoday", realname: "USA Today", domain: "www.usatoday.com", rss: 'http://rssfeeds.usatoday.com/usatoday-newstopstories&x=1', lean: 0, cache: [], searchable: false},
     {name: "abcnews", realname: "ABC News", domain: "abcnews.go.com", rss: 'http://feeds.abcnews.com/abcnews/topstories', lean: -0.13, cache: [], searchable: true},
     {name: "cbsnews", realname: "CBS News", domain: "www.cbsnews.com", rss: 'http://www.cbsnews.com/latest/rss/main', lean: -0.2, cache: [], searchable: false},
     {name: "washingtonpost", realname: "Washington Post", domain: "www.washingtonpost.com", rss: 'http://feeds.washingtonpost.com/rss/politics', lean: -0.27, cache: [], searchable: true},
@@ -154,9 +154,10 @@ function rssContentParser(content) {
     return image;
 }
 
+// works
 rssReader["vox"] = function(post) {
     var obj = createGeneralReader([
-        ['atom:title', '#'],
+        ['title'],
         ['link'],
         ['atom:content', '#']
     ])(post);
@@ -167,15 +168,17 @@ rssReader["vox"] = function(post) {
     return obj;
 };
 
+// works
 rssReader["cnn"] = createGeneralReader([
-    ['rss:title', '#'],
-    ['rss:link', '#'],
+    ['title'],
+    ['link'],
     ['meta', 'image', 'url']
 ]);
 
+// works
 rssReader["motherjones"] = createGeneralReader([
     ['title'],
-    ['origlink'],
+    ['link'],
     ['meta', 'image', 'url']
 ]);
 
@@ -259,7 +262,7 @@ rssReader["abcnews"] = createGeneralReader([
 
 rssReader["cbsnews"] = createGeneralReader([
     ['title'],
-    ['rss:link', '#'],
+    ['link'],
     ['rss:image', '#']
 ]);
 rssReader["washingtonpost"] = createGeneralReader([
@@ -362,6 +365,12 @@ function createGeneralReader(arr) {
         obj.image = post;
         for (var i = 0; i < cur.length; i++) {
             obj.image = obj.image[cur[i]];
+            if (obj.image == undefined || obj.image == null) {
+                break;
+            }
+        }
+        if (typeof obj.image != 'string') {
+            obj.image = '';
         }
 
         // console.log(obj);
@@ -397,7 +406,7 @@ function getCache(newsNetworkName, callback) {
       // check database for cache
       mongodb.findDocument(db, {'name': newsNetworkName},function(result) {
           // if news network is found
-          if (1 <= result.length) {
+          if (false && 1 <= result.length) {
               console.log("network found");
               var network = result[0].data;
 
