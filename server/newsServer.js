@@ -44,7 +44,7 @@ function getUser(uuid, lean, callback)
 			{
                 mongodb.insert(db, "users", {'userid' : uuid, history: []}, function(result) {
 				//db.users.insert({"userid" : uuid, "history" : []}, function(result) {
-                    console.log(result);
+                    //console.log(result);
 
 					console.log("Successfully created a new user.");
                     user = result.ops[0];
