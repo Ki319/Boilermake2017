@@ -9,7 +9,8 @@ module.networkSource = { // + delimited
     "huffingtonpost": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
     "wnd": "http://www.wnd.com/?s=",
     "breitbart": "http://www.breitbart.com/search/?s=",
-    "theblaze": "http://www.theblaze.com/?s="
+    "theblaze": "http://www.theblaze.com/?s=",
+    "washingtonpost": "https://www.washingtonpost.com/newssearch/?query="
 };
 
 module.toAbsoluteUrl = function(href) {
@@ -81,6 +82,9 @@ module.scrapeNetwork = {
         console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
     },
+    "realclearpolitics": function($, baseLink) {
+
+    }
 
 };
 
