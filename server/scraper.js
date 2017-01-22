@@ -54,6 +54,7 @@ function findKeywords(initialString, callback) {
     else {
       var array = response.keywords;
       if (array.length <= 0) {
+        console.log('NLP failed');
         callback(initialString)
       }
       else {
@@ -61,6 +62,7 @@ function findKeywords(initialString, callback) {
         for (var i = 0; i < array.length; i++) {
           searchString += array[i].text + ' ';
         }
+        console.log('NLP success', searchString);
         callback(searchString);
       }
     }
