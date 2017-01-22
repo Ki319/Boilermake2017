@@ -137,9 +137,10 @@ http.createServer(function (req, res) {
                                 if (article != null) {
                                     responseMsg = article.url + "\n";
             						responseMsg += article.title + "\n";
+                                    esponseMsg += network.realname + "\n";
             						responseMsg += article.image;
                                 }
-                                responseMsg += network.realname;
+                                r
                                 console.log("POST data:", responseMsg);
                                 res.writeHead(200, {"Content_Type" : "text/plain"});
                                 res.end(responseMsg);
@@ -147,8 +148,9 @@ http.createServer(function (req, res) {
                         } else {
                             responseMsg = scrapeData.url + "\n";
                             responseMsg += scrapeData.title + "\n";
-                            responseMsg += scrapeData.img + "\n";
-                            responseMsg += network.realname;
+                            responseMsg += network.realname + "\n";
+                            responseMsg += scrapeData.img;
+
                             console.log("POST data:", responseMsg);
                             res.writeHead(200, {"Content_Type" : "text/plain"});
                             res.end(responseMsg);
