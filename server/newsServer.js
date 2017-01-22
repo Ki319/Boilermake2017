@@ -155,7 +155,7 @@ http.createServer(function (req, res) {
                             if (scrapeData.img != null) {
                                 responseMsg += scrapeData.img;
                             } else {
-                                responseMsg += "";
+                                responseMsg += newNet.defImg;
                             }
                             console.log("POST data:", responseMsg);
                             res.writeHead(200, {"Content_Type" : "text/plain"});

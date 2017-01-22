@@ -270,12 +270,15 @@ if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !docum
 		var msg = userid + "\n";
 		msg += location.href + "\n";
 		msg += news.endSign.length == 0 ? document.title : document.title.substring(0, document.title.lastIndexOf(news.endSign));
-		httpRequest("http://home.maxocull.tech:9090/", msg, "POST", function(http) {
+		chrome.runtime.sendMessage({'msg' : msg}, function(response) {
+			alert(response.articleLink + "\n" + response.caption + "\n" + response.source + "\n" + response.img);
+		});
+		/*httpRequest("http://home.maxocull.tech:9090/", msg, "POST", function(http) {
 			loadData(http);
 			if(location.hostname === "www.cbsnews.com" || location.hostname === "www.thenation.com")
 			{
 				process();
 			}
-		});
+		});*/
 	});
 }
