@@ -5,7 +5,6 @@ var cheerio = require("cheerio");
 var url = require("url");
 
 module.networkSource = { // + delimited
-    //"vox": "http://www.vox.com/results?q=",
     "huffingtonpost": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
     "wnd": "http://www.wnd.com/?s=",
     "breitbart": "http://www.breitbart.com/search/?s=",
@@ -15,25 +14,7 @@ module.networkSource = { // + delimited
     "time": "http://search.time.com/?site=time&q="
 };
 
-module.toAbsoluteUrl = function(href) {
-    var link = document.createElement("a");
-    link.href = href;
-    return (link.protocol+"//"+link.host+link.pathname+link.search+link.hash);
-}
-
 module.scrapeNetwork = {
-    /*"vox": function($) {
-        // Invalid, uses AJAX.
-        console.log($('a.gs-title').first());
-        var link = $('a.gs-title').first().attr("href");
-        var title = $('a.gs-title').first().text();
-        var img = $('img.gs-image').first().attr("src");
-
-        console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
-        return {"url": link, "title": title, "img": img};
-        //top.children('.gsc-thumbnail-inside').first().
-
-    },*/
     "huffingtonpost": function($, baseLink) {
         var link = $('.card__link').first().attr('href');
         var title = $('.card__link').first().text();
@@ -55,14 +36,18 @@ module.scrapeNetwork = {
     "wnd": function($, baseLink) {
         var item = $("li.has-thumbnail").first();
         var title = item.children("h2").first().children().first().text();
-        var link = url.resolve(baseLink, item.children("h2").first().children().first().attr("href"));
-        var img = url.resolve(baseLink, item.children("figure").first().children().first().attr("src"));
+        var link = item.children("h2").first().children().first().attr("href");
+        var img = item.children("figure").first().children().first().attr("src");
 
         if (!title || !link) {
             return null;
         }
+        link = url.resolve(baseLink, link);
+
         if (!img) {
             img = null;
+        } else {
+            img = url.resolve(baseLink, img);
         }
 
         //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
@@ -70,15 +55,19 @@ module.scrapeNetwork = {
     },
     "theblaze": function($, baseLink) {
         var item = $("a.feed-link").first();
-        var link = url.resolve(baseLink, item.attr("href"));
+        var link = item.attr("href");
         var title = item.children(".feed-bottom").first().children().first().text().trim();
-        var img = url.resolve(baseLink, item.children("div.feed-img").first().children().first().attr("src"));
+        var img = item.children("div.feed-img").first().children().first().attr("src");
 
         if (!title || !link) {
             return null;
         }
+        link = url.resolve(baseLink, link);
+
         if (!img) {
             img = null;
+        } else {
+            img = url.resolve(baseLink, img);
         }
 
         //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
@@ -152,12 +141,13 @@ module.exports.scrape = function(network, article, callback) {
     }*/
     console.log(network);
 
-    if (!network.searchable) {
+    if (!network.searchable || module.networkSource[network.name] == undefined) {
         console.error("Network '" + network.name + "' is not searchable.");
         callback(null);
         return;
     }
 
+    //var query = querystring.stringify({query: "SELECT name FROM user WHERE uid = me()"});
     var link = module.networkSource[network.name] + article.split(" ").join("+");
     console.log("Scraping " + link);
 
