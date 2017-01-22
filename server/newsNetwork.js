@@ -238,6 +238,13 @@ rssReader["motherjones"] = createGeneralReader([
 ]);
 
 // works very small image, sometimes no image
+rssReader["theblaze"] = createGeneralReader([
+    ['title'],
+    ['link'],
+    ['enclosures', 0, 'url']
+]);
+
+// works very small image, sometimes no image
 rssReader["huffingtonpost"] = createGeneralReader([
     ['title'],
     ['link'],
