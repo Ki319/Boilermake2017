@@ -125,6 +125,8 @@ http.createServer(function (req, res) {
 					sum += obj.lean * weight;
 					weights += weight;
 				}
+                sum += network.lean;
+                weights++;
 				sum /= weights;
 
                 findNewNetwork(network, sum, function(newNet) {
