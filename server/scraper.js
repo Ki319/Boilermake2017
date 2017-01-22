@@ -104,7 +104,7 @@ module.exports.scrape = function(network, article, callback) {
     request(link, function(err, res, html) {
         if (err != undefined) {
             console.error("Failed to scrape:", err.stack);
-            return;
+            callback(null);
         }
 
         var $ = cheerio.load(html);
