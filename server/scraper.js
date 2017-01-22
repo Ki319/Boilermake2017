@@ -10,7 +10,8 @@ module.networkSource = { // + delimited
     "wnd": "http://www.wnd.com/?s=",
     "breitbart": "http://www.breitbart.com/search/?s=",
     "theblaze": "http://www.theblaze.com/?s=",
-    "washingtonpost": "https://www.washingtonpost.com/newssearch/?query="
+    "washingtonpost": "https://www.washingtonpost.com/newssearch/?query=",
+    "npr": "http://www.npr.org/search/index.php?searchinput="
 };
 
 module.toAbsoluteUrl = function(href) {
@@ -79,19 +80,40 @@ module.scrapeNetwork = {
             img = null;
         }
 
+        //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        return {"url": link, "title": title, "img": img};
+    },
+    "washingtonpost": function($, baseLink) {
+        var link = $("a.ng-binding").first().attr("href");
+        var title = $("a.ng-binding").first().text();
+        var img = $(".pb-feed-article-image.ng-scope").first().attr("src");
+
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
         console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
-    }
-    /*
-    "washingtonpost": function($, baseLink) {
-        // ...
     },
     "npr": function($, baseLink) {
         var link = $("h1.title").first().children().first().attr("href");
         var title = $("h1.title").first().children().first().text();
-        //var img = $("article.item").first().children()
+        var img = $("article.item").first().children().first().children().first().children().first().children().first().children().first().attr("src");
+
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
+        //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
+        return {"url": link, "title": title, "img": img};
     }
-    */
+
 
 };
 

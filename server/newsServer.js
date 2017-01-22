@@ -99,11 +99,11 @@ http.createServer(function (req, res) {
         var uuid = data[0];
         var link = url.parse(data[1]);
         var title = data[2];
-        //console.log(body, uuid, link, title);
+        console.log(body, uuid, link, title);
         console.log("Connection from user: " + uuid);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
         if (network == undefined) {
-            console.error("Network could not be determined.");
+            console.error("Network could not be determined from '" + link + "'.");
         }
 
 		//scraper.scrape(network, title, function(scrapeData) {
@@ -149,8 +149,11 @@ http.createServer(function (req, res) {
                             responseMsg = scrapeData.url + "\n";
                             responseMsg += scrapeData.title + "\n";
                             responseMsg += newNet.realname + "\n";
-                            responseMsg += scrapeData.img;
-
+                            if (scrapeData.img != null) {
+                                responseMsg += scrapeData.img;
+                            } else {
+                                responseMsg += "";
+                            }
                             console.log("POST data:", responseMsg);
                             res.writeHead(200, {"Content_Type" : "text/plain"});
                             res.end(responseMsg);
