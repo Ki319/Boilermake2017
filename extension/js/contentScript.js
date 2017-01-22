@@ -23,10 +23,20 @@ var newsData = [
 	{titleSign : "USA TODAY", endSign : "", topShift : 120, toTopShift : 50, shiftWait : 300, leftShift : 20, z : 5000}, // usa today
 	{titleSign : "ABC News", endSign : " - ABC News", topShift : 50, toTopShift : 50, shiftWait : 600, leftShift : 20, z : 1000038}, //abc news
 	{titleSign : "CBS News", endSign : " - CBS News", topShift : 100, toTopShift : 0, shiftWait : 400, leftShift : 10, z : 2147000000}, //cbs news
-	{titleSign : "Washington Post", endSign : " - Washington Post", topShift : 40, toTopShift : 0, shiftWait : 600, leftShift : 20, z : 0},
+	{titleSign : "Washington Post", endSign : " - Washington Post", topShift : 75, toTopShift : 0, shiftWait : 600, leftShift : 20, z : 0}, // washingtonpost
+	{titleSign : "TIME | ", endSign : " | Time", topShift : 200, toTopShift : 60, shiftWait : 800, leftShift : 20, z : 0}, //time
+	{titleSign : "The New York Times", endSign : " - The New York Times", topShift : 130, toTopShift : 50, shiftWait : 500, leftShift : 20, z : 0}, //nytimes
+	{titleSign : "NPR", endSign : " : NPR", topShift : 60, toTopShift : 0, shiftWait : 2500, leftShift : 10, z : 0}, //npr
+	{titleSign : "MSNBC", endSign : " - NBC News", topShift : 200, toTopShift : 0, shiftWait : 500, leftShift : 20, z : 1000000}, //msnbc
 	{},
 	{},
-	{}
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
+	{},
 ];
 
 var news;
@@ -131,7 +141,7 @@ function drawCanvas()
 	
 	for(var i = 0; i < words.length; i++)
 	{
-		if(text.length + words[i].length > 20)
+		if(text.length + words[i].length > 16 - currentLine * 4)
 		{
 			if(currentLine == 0)
 			{
@@ -190,22 +200,28 @@ function dblClickArticle(e)
 	window.open(articleLink,"_self")
 }
 
-function process(http)
+function loadData(http)
 {
 	if(http.responseText.length == 0)
 		return;
 	
 	var parsed = http.responseText.split("\n");
 	
-	articleLink = parsed[0];//"http://assets.worldwildlife.org/photos/479/images/story_full_width/giant-panda-shutterstock_86500690.jpg?1345572346";//parsed[0];
-	caption = parsed[1];//"PANDA SLAUGHTERED BY FACE!";//parsed[1];
-	if(parsed[2].length > 0)
+	//articleLink = "http://vignette1.wikia.nocookie.net/sonnywithachance/images/d/d9/So_Random.png/revision/latest?cb=20110226213549";//parsed[0];
+	//caption = "PANDA SLAUGHTERED BY FACE!";//parsed[1];
+	articleLink = parsed[0];
+	caption = parsed[1];
+	source = parsed[2];
+	if(parsed[3].length >= 0)
 	{
 		img = new Image;
-		img.src = parsed[2];
+		img.src = parsed[3];
+		//img.src = "https://vignette1.wikia.nocookie.net/sonnywithachance/images/d/d9/So_Random.png/revision/latest?cb=20110226213549";//parsed[3];
 	}
-	source = parsed[3];
-	
+}
+
+function process(http)
+{	
 	canvas = document.createElement('canvas');
 	canvas.id = "a9d9d9djgdj";
 	canvas.width = 200;
@@ -230,7 +246,7 @@ function process(http)
 }
 
 var site = location.hostname;
-if(site.indexOf(".") < 5)
+if(site.indexOf(".") < 4)
 	site = site.substring(site.indexOf(".") + 1);
 index = newsSites.indexOf(site);
 if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !document.title.startsWith("("))
@@ -239,7 +255,7 @@ if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !docum
 	chrome.storage.sync.get('userid', function(items) 
 	{
 		var userid = items.userid;
-		if (userid)
+		if (!userid)
 		{
 			userid = getRandomToken();
 			chrome.storage.sync.set({'userid': userid});
@@ -248,15 +264,16 @@ if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !docum
 		msg += location.href + "\n";
 		msg += document.title.substring(0, document.title.lastIndexOf(news.endSign));
 		httpRequest("http://home.maxocull.tech:9090/", msg, "POST", function(http) {
+			loadData(null);
 			if(location.hostname === "www.cbsnews.com")
 			{
-				process(http);
+				process();
 			}
 			else
 			{
 				$(window).bind("load", function()
 				{
-					process(http);
+					process();
 				});
 			}
 		});
