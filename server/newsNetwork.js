@@ -15,7 +15,7 @@ var rssList = [
     {name: "wsj", domain: "www.wsj.com", rss: 'http://www.wsj.com/xml/rss/3_7085.xml', lean: 0.4, cache: [], searchable: false}, // (world news)
     {name: "forbes", domain: "www.forbes.com", rss: 'https://www.forbes.com/real-time/feed2/', lean: 0.33, cache: [], searchable: false},
     {name: "realclearpolitics", domain: "www.realclearpolitics.com", rss: 'https://feeds.feedburner.com/realclearpolitics/qlMj', lean: 0.2, cache: [], searchable: true},
-    {name: "usatoday", domain: "www.usatoday.com", rss: 'http://rssfeeds.usatoday.com/usatoday-NewsTopStories', lean: 0, cache: [], searchable: false},
+    {name: "usatoday", domain: "www.usatoday.com", rss: 'http://rssfeeds.usatoday.com/usatoday-newstopstories&x=1', lean: 0, cache: [], searchable: false},
     {name: "abcnews", domain: "abcnews.go.com", rss: 'http://feeds.abcnews.com/abcnews/topstories', lean: -0.13, cache: [], searchable: true},
     {name: "cbsnews", domain: "www.cbsnews.com", rss: 'http://www.cbsnews.com/latest/rss/main', lean: -0.2, cache: [], searchable: false},
     {name: "washingtonpost", domain: "www.washingtonpost.com", rss: 'http://feeds.washingtonpost.com/rss/politics', lean: -0.27, cache: [], searchable: true},
@@ -105,17 +105,16 @@ function getNewsNetworksByLean(low, high, callback) {
 var rssReader = [];
 
 function rssContentParser(content) {
+
     var re = [];
-    re[0] = new RegExp("<[iI]mg.*src=\".*\" \/>");
+    re[0] = new RegExp("<[iI]mg(.*?)src=\"(.*?)([^/]\")(.*?)>");
     re[1] = new RegExp("src=\".*\"");
     re[2] = new RegExp("\".*\"");
 
     var image = content;
-    console.log(image);
 
     for (var i = 0; i < re.length; i++) {
         image = re[i].exec(image);
-        console.log(image);
         if (image == null) {
             return "";
         }
@@ -124,6 +123,9 @@ function rssContentParser(content) {
         }
     }
     image = image.split('\"')[1];
+    if (image == undefined || image == null) {
+        image = '';
+    }
     return image;
 }
 
@@ -135,8 +137,7 @@ rssReader["vox"] = function(post) {
     ])(post);
 
     obj.image = rssContentParser(obj.image);
-    console.log(obj);
-    console.log(null.drop);
+    // console.log(obj);
 
     return obj;
 };
@@ -159,46 +160,76 @@ rssReader["huffingtonpost"] = createGeneralReader([
     ['enclosures', 0, 'url']
 ]);
 
-rssReader["salon"] = createGeneralReader([
-    [],
-    [],
-    []
-]);
+rssReader["salon"] = function(post) {
+    var obj = createGeneralReader([
+      ['title'],
+      ['link'],
+      ['description']
+    ])(post);
 
-rssReader["washingtontimes"] = createGeneralReader([
-    [],
-    [],
-    []
-]);
+    obj.image = rssContentParser(obj.image);
+    // console.log(obj);
+
+    // process.exit();
+
+    return obj;
+}
+
+// TODO web scrape website
+rssReader["washingtontimes"] = function(post) {
+    var obj = createGeneralReader([
+        ['title'],
+        ['link'],
+        []
+    ])(post);
+
+    obj.image = ''; // webscrape (obj.url)
+
+    return obj;
+}
 
 rssReader["wsj"] = createGeneralReader([
-    [],
-    [],
-    []
+    ['title'],
+    ['link'],
+    ['enclosures', 0, 'url']
 ]);
 
 rssReader["forbes"] = createGeneralReader([
-    [],
-    [],
-    []
+    ['title'],
+    ['link'],
+    ['enclosures', 0, 'url']
 ]);
 
-rssReader["realclearpolitics"] = createGeneralReader([
-    [],
-    [],
-    []
-]);
+// TODO webs scrape website
+rssReader["realclearpolitics"] = function(post) {
+    var obj = createGeneralReader([
+        ['title'],
+        ['link'],
+        []
+    ])(post);
 
-rssReader["usatoday"] = createGeneralReader([
-    [],
-    [],
-    []
-]);
+    obj.image = ''; // webscrape (obj.url)
+
+    return obj
+}
+
+// TODO webs scrape website
+rssReader["usatoday"] = function(post) {
+    var obj = createGeneralReader([
+        ['title'],
+        ['link'],
+        []
+    ])(post);
+
+    obj.image = ''; // webscrape (obj.url)
+
+    return obj
+}
 
 rssReader["abcnews"] = createGeneralReader([
-    [],
-    [],
-    []
+    ['title'],
+    ['url'],
+    ['image', 'url']
 ]);
 
 rssReader["cbsnews"] = createGeneralReader([

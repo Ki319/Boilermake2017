@@ -4,7 +4,7 @@ var newsNetwork = require("./newsNetwork.js");
 var url = require("url");
 var scraper = require("./scraper.js");
 
-newsNetwork.getCache("motherjones", function(cache) {
+newsNetwork.getCache("abcnews", function(cache) {
     console.log("ITS DONE!");
     console.log(cache[0]);
 });
@@ -24,7 +24,7 @@ function addHistory(db, user, lean)
 
     var set = {$push : {"history": historyObj} };
     mongodb.update(db, "users", {"userid": user.userid}, set, function(result) {
-        //console.log(result);
+        // console.log(result);
     });
 }
 
