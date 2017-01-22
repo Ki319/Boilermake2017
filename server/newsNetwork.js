@@ -512,7 +512,7 @@ function createPostReadingFunc(newsNetwork) {
     return function functionName(post) {
         var obj = rssReader[newsNetwork.name](post);
         if (matasd.exec(obj.url)) {
-            obj.url = str.slice(0, 5) + str.slice(6, str.length))
+            obj.url = str.slice(0, 5) + str.slice(6, str.length);
         }
         if (obj.isEmpty()) {
             obj = newsNetwork.defaultImg;
