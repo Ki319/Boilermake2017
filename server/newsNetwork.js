@@ -292,6 +292,11 @@ rssReader["rollcall"] = createGeneralReader([
     ['link'],
     []
 ]);
+rssReader["foxnews"] = createGeneralReader([
+    ['title'],
+    ['link'],
+    []
+]);
 
 function createGeneralReader(arr) {
     return function(post) {
