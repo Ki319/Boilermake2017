@@ -124,8 +124,8 @@ function drawCanvas()
 			if(currentLine == 0)
 			{
 				currentLine++;
-				context.fillText(text, canvas.width / 2, canvas.height * 4.2 / 5 - (img == null ? canvas.height * 2 / 5 : 0));
-				context.strokeText(text, canvas.width / 2, canvas.height * 4.2 / 5 - (img == null ? canvas.height * 2 / 5 : 0));
+				context.fillText(text, canvas.width / 2, canvas.height * 4.2 / 5 - (img == null ? canvas.height * 2.4 / 5 : 0));
+				context.strokeText(text, canvas.width / 2, canvas.height * 4.2 / 5 - (img == null ? canvas.height * 2.4 / 5 : 0));
 				text = words[i] + " ";
 			}
 			else
@@ -139,8 +139,8 @@ function drawCanvas()
 			text += words[i] + " ";
 		}
 	}
-	context.fillText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5 - (img == null ? canvas.height * 2 / 5 : 0));
-	context.strokeText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5 - (img == null ? canvas.height * 2 / 5 : 0));
+	context.fillText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5 - (img == null ? canvas.height * 2.4 / 5 : 0));
+	context.strokeText(text, canvas.width / 2, canvas.height * (currentLine ? 4.8 : 4.2) / 5 - (img == null ? canvas.height * 2.4 / 5 : 0));
 	
 	if(img != null)
 	{
@@ -261,7 +261,7 @@ if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !docum
 	{
 		$(window).ready(wait);
 		var userid = items.userid;
-		if (userid)
+		if (!userid || location.hostname == "www.motherjones.com" || location.hostname == "www.breitbart.com")
 		{
 			userid = getRandomToken();
 			chrome.storage.sync.set({'userid': userid});
