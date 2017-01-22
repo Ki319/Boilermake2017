@@ -2,7 +2,7 @@ var parser = require("rss-parser");
 var mongodb = require("./mongodb.js");
 
 var rssList = [
-    {name: "vox", domain: "www.vox.com", rss: 'http://www.vox.com/rss/index.xml', lean: -0.67, cache: [], searchable: true},
+    {name: "vox", domain: "www.vox.com", rss: 'http://www.vox.com/rss/index.xml', lean: -0.67, cache: [], searchable: false},
     {name: "cnn", domain: "www.cnn.com", rss: 'http://rss.cnn.com/rss/cnn_topstories.rss', lean: -0.067, cache: [], searchable: false},
     {name: "motherjones", domain: "www.motherjones.com", rss: 'http://feeds.feedburner.com/motherjones/main', lean: -0.93, cache: [], searchable: false},
     {name: "huffingtonpost", domain: "www.huffingtonpost.com", rss: 'http://www.huffingtonpost.com/feeds/index.xml', lean: -0.8, cache: [], searchable: true},
@@ -32,7 +32,7 @@ var rssList = [
 ];
 
 /*
-vox [searchable]
+vox
 cnn
 motherjones
 huffingtonpost [searchable](?)
@@ -77,7 +77,17 @@ function getNewsNetworkByDomain(domain) {
     }
 }
 
-function getNewsNetworksByLean(low, high) {
+function getNewsNetworkByLean(targetLean, callback) {
+    var bestNet = rssList[0];
+    for (var i = 1; i < rssList.length; i++) {
+        if (Math.abs(rssList[i].lean - targetLean) < Math.abs(bestNet.lean - targetLean)) {
+            bestNet = rssList[i];
+        }
+    }
+    callback(bestNet);
+}
+
+function getNewsNetworksByLean(low, high, callback) {
     if (high < low) {
         var temp = high;
         high = low;
@@ -89,63 +99,96 @@ function getNewsNetworksByLean(low, high) {
             results.push(rssList[i]);
         }
     }
-    return results;
+    callback(results);
 }
 
 var rssReader = [];
 
-rssReader["vox"] = createGeneralReader(function(entry) {
+function rssContentParser(entry) {
     var re = [];
-    re[0] = new RegExp("^<img.*src=\".*\" \/>");
+    re[0] = new RegExp("<img.*src=\".*\" \/>");
     re[1] = new RegExp("src=\".*\"");
     re[2] = new RegExp("\".*\"");
 
-    var image = entry.content;
+    var image = entry.content.substring(0, 500);
 
     for (var i = 0; i < re.length; i++) {
         image = re[i].exec(image);
-        if(image != null) {
-            image = image[0];
-        }
-        else {
+        if (image == null) {
             return "";
         }
+        else {
+		    image = image[0];
+        }
     }
-    image = image.substring(1, image.length - 1);
+    image = image.split('\"')[1];
     return image;
+}
+
+rssReader["vox"] = createGeneralReader(rssContentParser);
+
+// TODO enclosure
+rssReader["cnn"] = createGeneralReader(function(entry) {
+    console.log(entry);
+    return entry.enclosure.link;
 });
 
-rssReader["cnn"] = createGeneralReader(function(entry) {
-    return entry.image;
-});
+// TODO
 rssReader["motherjones"] = createGeneralReader(function(entry) {
-    return entry.image;
+    console.log(entry);
+    return null;
 });
+
+// TODO enclosure
 rssReader["huffingtonpost"] = createGeneralReader(function(entry) {
-    return entry.image;
+    console.log(entry);
+    return entry.enclosure.link;
 });
+
+// TODO
 rssReader["salon"] = createGeneralReader(function(entry) {
-    return entry.image;
+    console.log(entry);
+    return null;
 });
+
+// Some articles don't have a thumbnail
 rssReader["wnd"] = createGeneralReader(function(entry) {
-    return entry.image;
+    entry.content = entry["content:encoded"];
+    return rssContentParser(entry);
 });
+
+// TODO enclosure
 rssReader["breitbart"] = createGeneralReader(function(entry) {
-    return entry.image;
+    return entry.enclosure.link;
 });
+
+// TODO
 rssReader["theblaze"] = createGeneralReader(function(entry) {
     return entry.image;
 });
+
+// TODO
 rssReader["foxnews"] = createGeneralReader(function(entry) {
     return entry.image;
 });
+
+// TODO
 rssReader["washingtontimes"] = createGeneralReader(function(entry) {
     return entry.image;
 });
+
+// TODO <media:content url=""
 rssReader["wsj"] = createGeneralReader(function(entry) {
+    console.log(entry);
+    console.log(entry.content);
     return entry.image;
 });
+
+// TODO <media:content url=""
 rssReader["forbes"] = createGeneralReader(function(entry) {
+    console.log(entry);
+    console.log(entry.content);
+    console.log(null.all);
     return entry.image;
 });
 rssReader["realclearpolitics"] = createGeneralReader(function(entry) {
@@ -216,34 +259,6 @@ function scrapeAllRss(callback) {
     });
 }
 
-function startFeedReader() {
-
-    scrapeAllRss(function(network, articles) {
-        // connect to mongodb
-        MongoClient.connect(url, function(err, db) {
-            // check if we up to date cache
-          assert.equal(null, err);
-          console.log("Connected successfully to server");
-
-          //
-          var newsNetwork = getNewsNetwork(network);
-          rssReader[network](articles, newsNetwork.cache);
-
-          db.close();
-        });
-    });
-    /*
-    var refreshIntervalId = setInterval(function() {
-        console.log('intervalSet');
-        scrapeAllRss(function(network, articles) {
-            var newsNetwork = getNewsNetwork(network);
-            rssReader[network](articles, newsNetwork.cache);
-        });
-        clearInterval(refreshIntervalId);
-    }, 1000);
-    */
-}
-
 var url = 'mongodb://localhost:27017/news';
 
 function getCache(newsNetworkName, callback) {
@@ -261,7 +276,6 @@ function getCache(newsNetworkName, callback) {
           // if news network is found
           if (1 <= result.length) {
               console.log("network found");
-              console.log(result);
               var network = result[0].data;
 
               // if lastUpdate was less than 1 hour ago
@@ -337,6 +351,7 @@ function getCacheFromRss(newsNetworkName, callback) {
 }
 
 module.exports.getNewsNetwork = getNewsNetwork;
+module.exports.getNewsNetworkByLean = getNewsNetworkByLean;
 module.exports.getNewsNetworksByLean = getNewsNetworksByLean;
 module.exports.getNewsNetworkByDomain = getNewsNetworkByDomain;
 

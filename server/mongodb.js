@@ -6,7 +6,7 @@ var insert = function(db, incollection, obj, callback) {
   // Get the documents collection
   var collection = db.collection(incollection);
   // Insert some documents
-  collection.insertOne(documents, function(err, result) {
+  collection.insertOne(obj, function(err, result) {
 
     callback(result);
   });
@@ -94,7 +94,6 @@ var remove = function(db, incol, doc, callback) {
   // Insert some documents
   collection.deleteOne(doc, function(err, result) {
     assert.equal(err, null);
-    assert.equal(1, result.result.n);
     console.log("Removed the document");
     callback(result);
   });
@@ -105,8 +104,6 @@ var removeDocument = function(db, doc, callback) {
   var collection = db.collection('documents');
   // Insert some documents
   collection.deleteOne(doc, function(err, result) {
-    assert.equal(err, null);
-    assert.equal(1, result.result.n);
     console.log("Removed the document");
     callback(result);
   });
