@@ -142,7 +142,7 @@ http.createServer(function (req, res) {
                             responseMsg += scrapeData.title + "\n";
                             responseMsg += scrapeData.img + "\n";
                         }
-                        responseMsg += network.name;
+                        responseMsg += network.realname;
                         console.log("POST data:", responseMsg);
                         res.writeHead(200, {"Content_Type" : "text/plain"});
                         res.end(responseMsg);
