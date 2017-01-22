@@ -137,10 +137,10 @@ http.createServer(function (req, res) {
                                 if (article != null) {
                                     responseMsg = article.url + "\n";
             						responseMsg += article.title + "\n";
-                                    esponseMsg += network.realname + "\n";
+                                    responseMsg += network.realname + "\n";
             						responseMsg += article.image;
                                 }
-                                
+
                                 console.log("POST data:", responseMsg);
                                 res.writeHead(200, {"Content_Type" : "text/plain"});
                                 res.end(responseMsg);
