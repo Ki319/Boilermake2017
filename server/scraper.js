@@ -35,9 +35,16 @@ module.scrapeNetwork = {
         var link = $('.card__link').first().attr('href');
         var title = $('.card__link').first().text();
         var img = $('div.card__image__src').first().attr('style');
+        if (!title || !link) {
+            return null;
+        }
 
-        img = img.replace("background-image: url(", "");
-        img = img.replace(");", "");
+        if (!img) {
+            img = null;
+        } else {
+            img = img.replace("background-image: url(", "");
+            img = img.replace(");", "");
+        }
 
         //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
@@ -48,6 +55,13 @@ module.scrapeNetwork = {
         var link = url.resolve(baseLink, item.children("h2").first().children().first().attr("href"));
         var img = url.resolve(baseLink, item.children("figure").first().children().first().attr("src"));
 
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
         //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
     },
@@ -57,9 +71,17 @@ module.scrapeNetwork = {
         var title = item.children(".feed-bottom").first().children().first().text().trim();
         var img = url.resolve(baseLink, item.children("div.feed-img").first().children().first().attr("src"));
 
+        if (!title || !link) {
+            return null;
+        }
+        if (!img) {
+            img = null;
+        }
+
         console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
-    }
+    },
+
 };
 
 module.exports.scrape = function(network, article, callback) {

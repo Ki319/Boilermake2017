@@ -100,6 +100,7 @@ http.createServer(function (req, res) {
         var link = url.parse(data[1]);
         var title = data[2];
         //console.log(body, uuid, link, title);
+        console.log("Connection from user: " + uuid);
         var network = newsNetwork.getNewsNetworkByDomain(link.hostname);
         if (network == undefined) {
             console.error("Network could not be determined.");
@@ -138,8 +139,9 @@ http.createServer(function (req, res) {
                         } else {
                             responseMsg = scrapeData.url + "\n";
                             responseMsg += scrapeData.title + "\n";
-                            responseMsg += scrapeData.img;
+                            responseMsg += scrapeData.img + "\n";
                         }
+                        responseMsg += network.name;
                         res.writeHead(200, {"Content_Type" : "text/plain"});
                         res.end(responseMsg);
                     });
