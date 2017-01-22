@@ -6,11 +6,11 @@ var url = require("url");
 
 module.networkSource = { // + delimited
     //"vox": "http://www.vox.com/results?q=",
-    "huffingtonpost": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
-    "wnd": "http://www.wnd.com/?s=",
-    "breitbart": "http://www.breitbart.com/search/?s=",
-    "theblaze": "http://www.theblaze.com/?s=",
-    "washingtonpost": "https://www.washingtonpost.com/newssearch/?query="
+    "Huffington Post": "http://www.huffingtonpost.com/search?sortBy=recency&sortOrder=desc&keywords=",
+    "WND": "http://www.wnd.com/?s=",
+    "Breitbart": "http://www.breitbart.com/search/?s=",
+    "The Blaze": "http://www.theblaze.com/?s=",
+    "Washington Post": "https://www.washingtonpost.com/newssearch/?query="
 };
 
 module.toAbsoluteUrl = function(href) {
@@ -32,7 +32,7 @@ module.scrapeNetwork = {
         //top.children('.gsc-thumbnail-inside').first().
 
     },*/
-    "huffingtonpost": function($, baseLink) {
+    "Huffington Post": function($, baseLink) {
         var link = $('.card__link').first().attr('href');
         var title = $('.card__link').first().text();
         var img = $('div.card__image__src').first().attr('style');
@@ -50,7 +50,7 @@ module.scrapeNetwork = {
         //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
     },
-    "wnd": function($, baseLink) {
+    "WND": function($, baseLink) {
         var item = $("li.has-thumbnail").first();
         var title = item.children("h2").first().children().first().text();
         var link = url.resolve(baseLink, item.children("h2").first().children().first().attr("href"));
@@ -66,7 +66,7 @@ module.scrapeNetwork = {
         //console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
     },
-    "theblaze": function($, baseLink) {
+    "The Blaze": function($, baseLink) {
         var item = $("a.feed-link").first();
         var link = url.resolve(baseLink, item.attr("href"));
         var title = item.children(".feed-bottom").first().children().first().text().trim();
@@ -82,8 +82,8 @@ module.scrapeNetwork = {
         console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
     },
-    "realclearpolitics": function($, baseLink) {
-
+    "Washington Post": function($, baseLink) {
+        // ...
     }
 
 };

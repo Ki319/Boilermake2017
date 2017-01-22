@@ -10,20 +10,20 @@ var newsData = [
 	{titleSign : "CNN", endSign : " - CNN", topShift : 125, toTopShift : 50, shiftWait : 90, leftShift : 20, z : 0}, //cnn
 	{titleSign : "Vox.com", endSign : " - Vox", topShift : 140, toTopShift : 60, shiftWait : 300, leftShift : 20, z : 0}, //vox
 	{titleSign : "Mother Jones", endSign : " | Mother Jones", topShift : 50, toTopShift : 50, shiftWait : 1000, leftShift : 20, z : 0}, //mother jones
-	{titleSign : "The Huffington Post", endSign : " | The Huffington Post", topShift : 125, toTopShift : 60, shiftWait : 400, leftShift : 20, z : 0}, //huffingtonpost
-	{titleSign : "Salon:", endSign : " - Salon.com", topShift : 70, toTopShift : 70, shiftWait : 1000, leftShift : 20, z : 0}, //salon
-	{titleSign : "WND - ", endSign : "", topShift : 300, toTopShift : 0, shiftWait : 200, leftShift : 20, z : 0}, // wnd
+	{titleSign : "Breaking News", endSign : " | The Huffington Post", topShift : 130, toTopShift : 70, shiftWait : 400, leftShift : 20, z : 0}, //huffingtonpost
+	{titleSign : "Salon", endSign : " - Salon.com", topShift : 70, toTopShift : 70, shiftWait : 1000, leftShift : 20, z : 0}, //salon
+	{titleSign : "WND", endSign : "", topShift : 300, toTopShift : 0, shiftWait : 200, leftShift : 20, z : 0}, // wnd
 	{titleSign : "Breitbart News Network", endSign : "", topShift : 230, toTopShift : 0, shiftWait : 1300, leftShift : 20, z : 0}, //breitbart
 	{titleSign : "TheBlaze", endSign : " - TheBlaze", topShift : 50, toTopShift : 50, shiftWait : 1000, leftShift : 20, z : 1000}, //theblaze
-	{titleSign : "Fox News - ", endSign : " | Fox News", topShift : 150, toTopShift : 0, shiftWait : 500, leftShift : 20, z : 0}, //foxnews
-	{titleSign : "Washington Times - ", endSign : " - Washington Times", topShift : 130, toTopShift : 130, shiftWait : 600, leftShift : 20, z : 1000}, //washington times
+	{titleSign : "Fox News", endSign : " | Fox News", topShift : 150, toTopShift : 0, shiftWait : 500, leftShift : 20, z : 0}, //foxnews
+	{titleSign : "Washington Times", endSign : " - Washington Times", topShift : 130, toTopShift : 130, shiftWait : 600, leftShift : 20, z : 1000}, //washington times
 	{titleSign : "The Wall Street Journal", endSign : " - WSJ", topShift : 300, toTopShift : 80, shiftWait : 500, leftShift : 20, z : 3}, // wallstreet journal
 	{titleSign : "Forbes", endSign : "", topShift : 500, toTopShift : 0, shiftWait : 100, leftShift : 20, z : 10000}, //forbes
-	{titleSign : "RealClearPolitics - ", endSign : " | RealClearPolitics", topShift : 10},
-	{titleSign : "USA TODAY:", endSign : "", topShift : 120, toTopShift : 50, shiftWait : 300, leftShift : 20, z : 5000},
-	{titleSign : "ABC News:", endSign : " - ABC News", topShift : 50, toTopShift : 50, shiftWait : 600, leftShift : 20, z : 1000038},
-	{titleSign : "ASJ", endSign : " - CBS News", topShift : 100, toTopShift : 0, shiftWait : 400, leftShift : 10, z : 2147000000},
-	{},
+	{titleSign : "RealClearPolitics", endSign : " | RealClearPolitics", topShift : 10}, //realclearpolitics
+	{titleSign : "USA TODAY", endSign : "", topShift : 120, toTopShift : 50, shiftWait : 300, leftShift : 20, z : 5000}, // usa today
+	{titleSign : "ABC News", endSign : " - ABC News", topShift : 50, toTopShift : 50, shiftWait : 600, leftShift : 20, z : 1000038}, //abc news
+	{titleSign : "CBS News", endSign : " - CBS News", topShift : 100, toTopShift : 0, shiftWait : 400, leftShift : 10, z : 2147000000}, //cbs news
+	{titleSign : "Washington Post", endSign : " - Washington Post", topShift : 40, toTopShift : 0, shiftWait : 600, leftShift : 20, z : 0},
 	{},
 	{},
 	{}
@@ -41,6 +41,7 @@ var index;
 var img;
 var articleLink;
 var caption;
+var source;
 
 function getRandomToken() {
 	// E.g. 8 * 32 = 256 bits token
@@ -100,20 +101,24 @@ function drawCanvas()
 	context.textAlign = 'center';
 	context.strokeStyle = 'white';
 	context.lineWidth = .75;
-	context.fillText("CNN", canvas.width / 2, canvas.height / 6);
-	context.strokeText("CNN", canvas.width / 2, canvas.height / 6);
+	context.fillText(source.length < 10 ? source : source.substring(0, 10), canvas.width / 2, canvas.height / 6);
+	context.strokeText(source.length < 10 ? source : source.substring(0, 10), canvas.width / 2, canvas.height / 6);
 	
-	var ratio = img.width / img.height;
-	
-	var height = canvas.height / 2;
-	var width = ratio * height;
-	if(width >= canvas.width)
+	if(img)
 	{
-		height = canvas.width / ratio;
-		width = canvas.width;
-	}
+		var ratio = img.width / img.height;
 	
-	context.drawImage(img, (canvas.width - width) / 2, canvas.height / 5, width, height);
+		var height = canvas.height / 2;
+		var width = ratio * height;
+		if(width >= canvas.width)
+		{
+			height = canvas.width / ratio;
+			width = canvas.width;
+		}
+	
+		context.drawImage(img, (canvas.width - width) / 2, canvas.height / 5, width, height);	
+	}
+
 	
 	var currentLine = 0;
 	var words = caption.split(" ");
@@ -192,11 +197,14 @@ function process(http)
 	
 	var parsed = http.responseText.split("\n");
 	
-	img = new Image;
-	
-	img.src = parsed[3];
-	articleLink = parsed[0];
-	caption = parsed[1];
+	articleLink = parsed[0];//"http://assets.worldwildlife.org/photos/479/images/story_full_width/giant-panda-shutterstock_86500690.jpg?1345572346";//parsed[0];
+	caption = parsed[1];//"PANDA SLAUGHTERED BY FACE!";//parsed[1];
+	if(parsed[2].length > 0)
+	{
+		img = new Image;
+		img.src = parsed[2];
+	}
+	source = parsed[3];
 	
 	canvas = document.createElement('canvas');
 	canvas.id = "a9d9d9djgdj";
@@ -209,6 +217,7 @@ function process(http)
 	canvas.style.cursor = 'pointer';
 	canvas.addEventListener('click', clickArticle, false);
 	canvas.addEventListener('dblclick', dblClickArticle, false);
+	canvas.title = news.titleSign + " - " + caption;
 	
 	context = canvas.getContext("2d");
 	context.globalAlpha = 0;
@@ -220,38 +229,36 @@ function process(http)
 	$(window).scroll(scrollCanvas);
 }
 
-function startup()
+var site = location.hostname;
+if(site.indexOf(".") < 5)
+	site = site.substring(site.indexOf(".") + 1);
+index = newsSites.indexOf(site);
+if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !document.title.startsWith("("))
 {
-	var site = location.hostname;
-	if(site.indexOf(".") < 5)
-		site = site.substring(site.indexOf(".") + 1);
-	index = newsSites.indexOf(site);
-	if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !document.title.startsWith("("))
+	news = newsData[index];
+	chrome.storage.sync.get('userid', function(items) 
 	{
-		news = newsData[index];
-		var userid;
-		chrome.storage.sync.get('userid', function(items) 
+		var userid = items.userid;
+		if (userid)
 		{
-			userid = items.userid;
-			if (!userid)
+			userid = getRandomToken();
+			chrome.storage.sync.set({'userid': userid});
+		}
+		var msg = userid + "\n";
+		msg += location.href + "\n";
+		msg += document.title.substring(0, document.title.lastIndexOf(news.endSign));
+		httpRequest("http://home.maxocull.tech:9090/", msg, "POST", function(http) {
+			if(location.hostname === "www.cbsnews.com")
 			{
-				userid = getRandomToken();
-				chrome.storage.sync.set({userid: userid});
+				process(http);
+			}
+			else
+			{
+				$(window).bind("load", function()
+				{
+					process(http);
+				});
 			}
 		});
-		httpRequest("http://home.maxocull.tech:9090/", userid + "\n" + location.url + "\n" + document.title, "POST", process);
-	}
+	});
 }
-
-if(location.hostname === "www.cbsnews.com")
-{
-	startup();
-}
-
-$(window).bind("load", function()
-{
-	if(!(location.hostname === "www.cbsnews.com"))
-	{
-		startup();
-	}
-});
