@@ -4,7 +4,7 @@ var newsNetwork = require("./newsNetwork.js");
 var url = require("url");
 var scraper = require("./scraper.js");
 
-newsNetwork.getCache("abcnews", function(cache) {
+newsNetwork.getCache("huffingtonpost", function(cache) {
     console.log("ITS DONE!");
     console.log(cache[0]);
 });

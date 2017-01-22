@@ -81,7 +81,8 @@ module.scrapeNetwork = {
 
         console.log("LINK: " + link, "TITLE: " + title, "IMG: " + img);
         return {"url": link, "title": title, "img": img};
-    },
+    }
+    /*
     "washingtonpost": function($, baseLink) {
         // ...
     },
@@ -90,6 +91,7 @@ module.scrapeNetwork = {
         var title = $("h1.title").first().children().first().text();
         //var img = $("article.item").first().children()
     }
+    */
 
 };
 
