@@ -3,8 +3,7 @@ var newsSites = ["cnn.com", "vox.com", "motherjones.com", "huffingtonpost.com",
 		"washingtontimes.com", "wsj.com", "forbes.com", "realclearpolitics.com",
 		"usatoday.com", "abcnews.go.com", "cbsnews.com", "washingtonpost.com",
 		"time.com", "nytimes.com", "npr.org", "msnbc.com", "mediamatters.org",
-		"thenation.com", "alternet.org", "politico.com", "thehill.com", "rollcall.com",
-		"drudgereport.com"];
+		"thenation.com", "alternet.org", "politico.com", "thehill.com", "rollcall.com"];
 		
 var newsData = [
 	{titleSign : "CNN", endSign : " - CNN", topShift : 125, toTopShift : 50, shiftWait : 90, leftShift : 20, z : 0}, //cnn
@@ -26,17 +25,14 @@ var newsData = [
 	{titleSign : "Washington Post", endSign : " - Washington Post", topShift : 75, toTopShift : 0, shiftWait : 600, leftShift : 20, z : 0}, // washingtonpost
 	{titleSign : "TIME | ", endSign : " | Time", topShift : 200, toTopShift : 60, shiftWait : 800, leftShift : 20, z : 0}, //time
 	{titleSign : "The New York Times", endSign : " - The New York Times", topShift : 130, toTopShift : 50, shiftWait : 500, leftShift : 20, z : 0}, //nytimes
-	{titleSign : "NPR", endSign : " : NPR", topShift : 60, toTopShift : 0, shiftWait : 2500, leftShift : 10, z : 0}, //npr
+	{titleSign : "NPR", endSign : " : NPR", topShift : 100, toTopShift : 100, shiftWait : 2500, leftShift : 10, z : 0}, //npr
 	{titleSign : "MSNBC", endSign : " - NBC News", topShift : 200, toTopShift : 0, shiftWait : 500, leftShift : 20, z : 1000000}, //msnbc
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
-	{},
+	{titleSign : "Media Matters for America", endSign : "", topShift : 0, toTopShift : 0, shiftWait : 600, leftShift : 10, z : 1000000}, // media matters
+	{titleSign : "The Nation", endSign : " | The Nation", topShift : 170, toTopShift : 60, shiftWait : 400, leftShift : 20, z : 0}, //the nation
+	{titleSign : "Alternet", endSign : " | Alternet", topShift : 100, toTopShift : 0, shiftWait : 500, leftShift : 20, z : 0}, //alternet
+	{titleSign : "Politics, Policy, Politcal News - POLITICO", endSign : " - POLITICO", topShift : 360, toTopShift : 0, shiftWait : 600, leftShift : 20, z : 0},
+	{titleSign : "The Hill", endSign : " | TheHill", topShift : 110, toTopShift : 80, shiftWait : 600, leftShift : 20, z : 10000},
+	{titleSign : "Roll Call", endSign : "", topShift : 100, toTopShift : 40, shiftWait : 500, leftShift : 20, z : 10}
 ];
 
 var news;
@@ -54,14 +50,12 @@ var caption;
 var source;
 
 function getRandomToken() {
-	// E.g. 8 * 32 = 256 bits token
 	var randomPool = new Uint8Array(32);
 	crypto.getRandomValues(randomPool);
 	var hex = '';
 	for (var i = 0; i < randomPool.length; ++i) {
 		hex += randomPool[i].toString(16);
 	}
-	// E.g. db18458e2782b2b77e36769c569e263a53885a9944dd0a861e5064eac16f1a
 	return hex;
 }
 
@@ -220,8 +214,8 @@ function loadData(http)
 	}
 }
 
-function process(http)
-{	
+function process()
+{
 	canvas = document.createElement('canvas');
 	canvas.id = "a9d9d9djgdj";
 	canvas.width = 200;
@@ -233,7 +227,7 @@ function process(http)
 	canvas.style.cursor = 'pointer';
 	canvas.addEventListener('click', clickArticle, false);
 	canvas.addEventListener('dblclick', dblClickArticle, false);
-	canvas.title = news.titleSign + " - " + caption;
+	canvas.title = source + " - " + caption;
 	
 	context = canvas.getContext("2d");
 	context.globalAlpha = 0;
@@ -245,6 +239,18 @@ function process(http)
 	$(window).scroll(scrollCanvas);
 }
 
+function wait()
+{
+	if(caption)
+	{
+		process();
+	}
+	else
+	{
+		setTimeout(wait, 100);
+	}
+}
+
 var site = location.hostname;
 if(site.indexOf(".") < 4)
 	site = site.substring(site.indexOf(".") + 1);
@@ -254,27 +260,21 @@ if(index > -1 && !document.title.startsWith(newsData[index].titleSign) && !docum
 	news = newsData[index];
 	chrome.storage.sync.get('userid', function(items) 
 	{
+		$(window).ready(wait);
 		var userid = items.userid;
-		if (!userid)
+		if (userid)
 		{
 			userid = getRandomToken();
 			chrome.storage.sync.set({'userid': userid});
 		}
 		var msg = userid + "\n";
 		msg += location.href + "\n";
-		msg += document.title.substring(0, document.title.lastIndexOf(news.endSign));
+		msg += news.endSign.length == 0 ? document.title : document.title.substring(0, document.title.lastIndexOf(news.endSign));
 		httpRequest("http://home.maxocull.tech:9090/", msg, "POST", function(http) {
-			loadData(null);
-			if(location.hostname === "www.cbsnews.com")
+			loadData(http);
+			if(location.hostname === "www.cbsnews.com" || location.hostname === "www.thenation.com")
 			{
 				process();
-			}
-			else
-			{
-				$(window).bind("load", function()
-				{
-					process();
-				});
 			}
 		});
 	});
