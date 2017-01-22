@@ -104,6 +104,31 @@ function getNewsNetworksByLean(low, high, callback) {
 
 var rssReader = [];
 
+function rssContentParser2(content) {
+
+    var re = [];
+    re[0] = new RegExp("<[iI]mg(.*?)src=\'(.*?)([^/]\')(.*?)>");
+    re[1] = new RegExp("src=\".*\"");
+    re[2] = new RegExp("\".*\"");
+
+    var image = content;
+
+    for (var i = 0; i < re.length; i++) {
+        image = re[i].exec(image);
+        if (image == null) {
+            return "";
+        }
+        else {
+		    image = image[0];
+        }
+    }
+    image = image.split('\"')[1];
+    if (image == undefined || image == null) {
+        image = '';
+    }
+    return image;
+}
+
 function rssContentParser(content) {
 
     var re = [];
@@ -240,27 +265,35 @@ rssReader["cbsnews"] = createGeneralReader([
 rssReader["washingtonpost"] = createGeneralReader([
     ['title'],
     ['link'],
-    []
+    ['image', 'url']
 ]);
 rssReader["time"] = createGeneralReader([
     ['title'],
     ['link'],
-    []
+    ['image', 'url']
 ]);
 rssReader["nytimes"] = createGeneralReader([
     ['title'],
     ['link'],
-    []
+    ['media:content', '@', 'url']
 ]);
-rssReader["npr"] = createGeneralReader([
-    ['title'],
-    ['link'],
-    []
-]);
+rssReader["npr"] = function(node) {
+    var obj = createGeneralReader([
+        ['title'],
+        ['link'],
+        ['description']
+    ])(node);
+    console.log(obj);
+    obj.image = rssContentParser(obj.image);
+    console.log(obj);
+    process.exit();
+    return obj;
+}
+
 rssReader["msnbc"] = createGeneralReader([
     ['title'],
     ['link'],
-    []
+    ['image', 'url']
 ]);
 rssReader["mediamatters"] = createGeneralReader([
     ['title'],
@@ -320,7 +353,7 @@ function createGeneralReader(arr) {
 
         console.log(obj);
 
-        process.exit();
+        // process.exit();
 
         return obj;
     };
