@@ -136,7 +136,7 @@ http.createServer(function (req, res) {
                                     responseMsg = article.url + "\n";
             						responseMsg += article.title + "\n";
                                     responseMsg += newNet.realname + "\n";
-                                    if (article.img != null && article.img != undefined) {
+                                    if (article.img != null && article.img != undefined && article.img != "undefined") {
             						    responseMsg += article.image;
                                     } else {
                                         responseMsg += newNet.defImg;
